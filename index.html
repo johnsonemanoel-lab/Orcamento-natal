@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento de Fim de Ano - Roupas & Vestuário</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom scrollbar for item lists */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-item {
+            animation: slideIn 0.2s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen pb-16">
+
+    <!-- Top Navigation / Header -->
+    <header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 shadow-inner">
+                    <i class="ph-fill ph-shopping-bag-open text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-2">
+                        Orçamento de Fim de Ano
+                    </h1>
+                    <p class="text-xs text-indigo-200/80">Vestuário, Roupas & Compras da Família</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openBudgetModal()" class="text-xs sm:text-sm bg-white/10 hover:bg-white/20 active:bg-white/25 text-white font-medium px-3.5 py-2 rounded-xl border border-white/15 transition flex items-center gap-2 shadow-sm">
+                    <i class="ph ph-sliders-horizontal text-base text-indigo-300"></i>
+                    <span>Ajustar Metas</span>
+                </button>
+                <button onclick="openResetModal()" title="Resetar todos os dados" class="text-xs sm:text-sm bg-rose-500/10 hover:bg-rose-500/20 text-rose-200 font-medium p-2 sm:px-3 sm:py-2 rounded-xl border border-rose-400/20 transition flex items-center gap-1.5">
+                    <i class="ph ph-arrow-counter-clockwise text-base"></i>
+                    <span class="hidden sm:inline">Resetar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
+
+        <!-- 1. Painel de Resumo Geral -->
+        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 relative overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                
+                <!-- Orçamento Total -->
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Orçamento Geral</span>
+                        <div class="flex items-baseline gap-2">
+                            <span id="display-total-budget" class="text-2xl sm:text-3xl font-extrabold text-slate-800">R$ 2.000,00</span>
+                        </div>
+                        <button onclick="openBudgetModal()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium mt-1.5 inline-flex items-center gap-1">
+                            <i class="ph ph-pencil-simple"></i> Editar teto ou metas
+                        </button>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                        <i class="ph-duotone ph-wallet text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Total Gasto -->
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Total Gasto</span>
+                        <div class="flex items-baseline gap-2">
+                            <span id="display-total-spent" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">R$ 0,00</span>
+                        </div>
+                        <span id="display-total-items-count" class="text-xs text-slate-500 mt-1.5 block">0 itens lançados</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                        <i class="ph-duotone ph-receipt text-2xl"></i>
+                    </div>
+                </div>
+
+                <!-- Saldo Restante Geral -->
+                <div id="remaining-card" class="bg-emerald-50/70 rounded-xl p-4 border border-emerald-200/80 flex items-center justify-between transition-colors">
+                    <div>
+                        <span id="remaining-label" class="text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1">Saldo Restante Geral</span>
+                        <div class="flex items-baseline gap-2">
+                            <span id="display-total-remaining" class="text-2xl sm:text-3xl font-extrabold text-emerald-700">R$ 2.000,00</span>
+                        </div>
+                        <span id="remaining-status-text" class="text-xs text-emerald-600 font-medium mt-1.5 block">Dentro do orçamento</span>
+                    </div>
+                    <div id="remaining-icon-box" class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                        <i id="remaining-icon" class="ph-duotone ph-piggy-bank text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra de Progresso Geral -->
+            <div class="mt-6 pt-5 border-t border-slate-100">
+                <div class="flex justify-between items-center text-xs sm:text-sm mb-2">
+                    <span class="font-medium text-slate-600 flex items-center gap-1.5">
+                        <i class="ph-fill ph-chart-bar text-indigo-500"></i>
+                        Consumo do Orçamento Geral
+                    </span>
+                    <div class="flex items-center gap-2">
+                        <span id="general-progress-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                            0% utilizado
+                        </span>
+                    </div>
+                </div>
+                <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
+                    <div id="general-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+
+                <!-- Alerta se a soma das metas for diferente do orçamento geral -->
+                <div id="allocation-warning" class="hidden mt-3 px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-fill ph-warning-circle text-amber-500 text-base shrink-0"></i>
+                        <span id="allocation-warning-text">A soma das metas individuais difere do orçamento geral.</span>
+                    </div>
+                    <button onclick="openBudgetModal()" class="underline font-semibold shrink-0 hover:text-amber-950">Ajustar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Formulário Rápido de Lançamento -->
+        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="ph-fill ph-plus-circle text-indigo-600 text-xl"></i>
+                        Novo Lançamento de Compra
+                    </h2>
+                    <p class="text-xs text-slate-500">Adicione uma roupa, calçado ou acessório e escolha de quem é o gasto</p>
+                </div>
+                <!-- Sugestões rápidas de tags -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-[11px] text-slate-400 mr-1">Preencher rápido:</span>
+                    <button type="button" onclick="fillQuickTag('Camisa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition border border-slate-200/70">👕 Camisa</button>
+                    <button type="button" onclick="fillQuickTag('Calça / Bermuda')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition border border-slate-200/70">👖 Calça</button>
+                    <button type="button" onclick="fillQuickTag('Calçado / Tênis')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition border border-slate-200/70">👟 Calçado</button>
+                    <button type="button" onclick="fillQuickTag('Vestido / Blusa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition border border-slate-200/70">👗 Vestido</button>
+                </div>
+            </div>
+
+            <form id="expense-form" onsubmit="handleAddExpense(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-end">
+                <!-- Pessoa / Subcategoria -->
+                <div class="sm:col-span-3">
+                    <label for="item-category" class="block text-xs font-semibold text-slate-600 mb-1.5">Pessoa / Subcategoria</label>
+                    <div class="relative">
+                        <select id="item-category" required class="w-full appearance-none bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium">
+                            <option value="johnson">👔 Johnson</option>
+                            <option value="leandra">👗 Leandra</option>
+                            <option value="emanuel">👕 Emanuel</option>
+                            <option value="outros">🛍️ Outros Gastos</option>
+                        </select>
+                        <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Nome / Descrição do Item -->
+                <div class="sm:col-span-5">
+                    <label for="item-name" class="block text-xs font-semibold text-slate-600 mb-1.5">Peça de Roupa / Descrição</label>
+                    <div class="relative">
+                        <i class="ph ph-tag absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="item-name" required placeholder="Ex: Camisa polo, Calça jeans, Sapato..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl pl-9 pr-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Valor (R$) -->
+                <div class="sm:col-span-2">
+                    <label for="item-amount" class="block text-xs font-semibold text-slate-600 mb-1.5">Valor (R$)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">R$</span>
+                        <input type="number" id="item-amount" required step="0.01" min="0.01" placeholder="0,00" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-semibold">
+                    </div>
+                </div>
+
+                <!-- Botão Adicionar -->
+                <div class="sm:col-span-2">
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow-sm hover:shadow transition flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-plus"></i>
+                        <span>Adicionar</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- 3. Cards das Subcategorias (Johnson, Leandra, Emanuel, Outros Gastos) -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-users-three text-indigo-600 text-xl"></i>
+                    Acompanhamento por Pessoa / Área
+                </h2>
+                <span class="text-xs text-slate-500">Toque na meta de cada pessoa para editar</span>
+            </div>
+
+            <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Preenchido dinamicamente via JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: Editar Orçamento Geral e Metas Individuais -->
+    <div id="budget-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 animate-item">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="ph-fill ph-sliders-horizontal text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800">Configurar Orçamento e Metas</h3>
+                        <p class="text-xs text-slate-500">Defina o teto geral e a divisão entre cada área</p>
+                    </div>
+                </div>
+                <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveBudgets(event)" class="mt-4 space-y-4">
+                <!-- Teto Geral -->
+                <div class="bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-100">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-indigo-900 mb-1">
+                        Orçamento Total Geral (R$)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-600 font-bold text-sm">R$</span>
+                        <input type="number" id="modal-total-budget" step="0.01" min="0" required oninput="updateModalAllocationPreview()" class="w-full bg-white border border-indigo-200 text-slate-900 font-bold text-base rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Divisão por Subcategoria -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Limites por Subcategoria</span>
+                        <button type="button" onclick="autoDistributeRemaining()" class="text-xs text-indigo-600 hover:underline font-medium">
+                            Ajustar soma ao total
+                        </button>
+                    </div>
+
+                    <div id="modal-subcategories-inputs" class="space-y-2.5">
+                        <!-- Gerado via JS -->
+                    </div>
+                </div>
+
+                <!-- Resumo da Alocação no Modal -->
+                <div id="modal-allocation-box" class="p-3 rounded-xl bg-slate-100 text-xs flex items-center justify-between">
+                    <span class="text-slate-600 font-medium">Soma das metas individuais:</span>
+                    <span id="modal-allocated-sum" class="font-bold text-slate-800">R$ 2.000,00</span>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeBudgetModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Item Lançado -->
+    <div id="edit-item-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 animate-item">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-pencil-simple text-indigo-600"></i>
+                    Editar Item
+                </h3>
+                <button onclick="closeEditItemModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveEditedItem(event)" class="mt-4 space-y-3.5">
+                <input type="hidden" id="edit-item-id">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Pessoa / Subcategoria</label>
+                    <select id="edit-item-category" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="johnson">👔 Johnson</option>
+                        <option value="leandra">👗 Leandra</option>
+                        <option value="emanuel">👕 Emanuel</option>
+                        <option value="outros">🛍️ Outros Gastos</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Descrição da Roupa / Item</label>
+                    <input type="text" id="edit-item-name" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Valor (R$)</label>
+                    <input type="number" id="edit-item-amount" step="0.01" min="0.01" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeEditItemModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmar Reset -->
+    <div id="reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 animate-item text-center">
+            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3">
+                <i class="ph-fill ph-trash text-2xl"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-800">Resetar Orçamento?</h3>
+            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Isso apagará todos os itens lançados e restaurará o orçamento geral para <strong>R$ 2.000,00</strong> com as metas iniciais.
+            </p>
+            <div class="flex items-center justify-center gap-2 mt-5">
+                <button onclick="closeResetModal()" class="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                    Cancelar
+                </button>
+                <button onclick="confirmResetData()" class="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 transition">
+                    Sim, Resetar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-slate-700">
+        <i id="toast-icon" class="ph-fill ph-check-circle text-emerald-400 text-lg"></i>
+        <span id="toast-message">Ação realizada com sucesso!</span>
+    </div>
+
+    <script>
+        // Chave de armazenamento no navegador
+        const STORAGE_KEY = 'orcamento_fim_ano_v1';
+
+        // Estado Padrão Inicial (Orçamento Geral R$ 2.000 dividido entre Johnson, Leandra, Emanuel e Outros Gastos)
+        const DEFAULT_STATE = {
+            totalBudget: 2000.00,
+            categories: [
+                {
+                    id: 'johnson',
+                    name: 'Johnson',
+                    subtitle: 'Roupas & Vestuário',
+                    icon: 'ph-user',
+                    emoji: '👔',
+                    color: 'blue',
+                    budget: 600.00
+                },
+                {
+                    id: 'leandra',
+                    name: 'Leandra',
+                    subtitle: 'Roupas & Vestuário',
+                    icon: 'ph-user',
+                    emoji: '👗',
+                    color: 'purple',
+                    budget: 600.00
+                },
+                {
+                    id: 'emanuel',
+                    name: 'Emanuel',
+                    subtitle: 'Roupas & Vestuário',
+                    icon: 'ph-user',
+                    emoji: '👕',
+                    color: 'teal',
+                    budget: 500.00
+                },
+                {
+                    id: 'outros',
+                    name: 'Outros Gastos',
+                    subtitle: 'Vestuário Extra & Diversos',
+                    icon: 'ph-shopping-bag',
+                    emoji: '🛍️',
+                    color: 'amber',
+                    budget: 300.00
+                }
+            ],
+            items: []
+        };
+
+        let appState = loadState();
+
+        // Carregar estado do localStorage
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed.totalBudget !== 'number' || !Array.isArray(parsed.categories)) {
+                    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+                }
+                return parsed;
+            } catch (e) {
+                return JSON.parse(JSON.stringify(DEFAULT_STATE));
+            }
+        }
+
+        // Salvar estado no localStorage
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error('Erro ao salvar no localStorage:', e);
+            }
+        }
+
+        // Formatar valor em Real Brasileiro (R$ 0.000,00)
+        function formatCurrency(value) {
+            return Number(value || 0).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+        }
+
+        // Preencher sugestão rápida no campo de descrição
+        function fillQuickTag(text) {
+            const input = document.getElementById('item-name');
+            input.value = text;
+            input.focus();
+        }
+
+        // Exibir notificação Toast
+        let toastTimeout;
+        function showToast(message, isWarning = false) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-message');
+
+            msg.textContent = message;
+            icon.className = isWarning
+                ? 'ph-fill ph-warning-circle text-amber-400 text-lg'
+                : 'ph-fill ph-check-circle text-emerald-400 text-lg';
+
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3000);
+        }
+
+        // Adicionar novo item de despesa
+        function handleAddExpense(event) {
+            event.preventDefault();
+            const categoryId = document.getElementById('item-category').value;
+            const nameInput = document.getElementById('item-name');
+            const amountInput = document.getElementById('item-amount');
+
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+
+            if (!name || isNaN(amount) || amount <= 0) {
+                showToast('Preencha a descrição e um valor válido.', true);
+                return;
+            }
+
+            const newItem = {
+                id: 'item_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                categoryId,
+                name,
+                amount: Math.round(amount * 100) / 100,
+                createdAt: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+            };
+
+            appState.items.unshift(newItem);
+            saveState();
+            renderAll();
+
+            // Limpar campos mantendo a pessoa selecionada para facilitar múltiplos lançamentos
+            nameInput.value = '';
+            amountInput.value = '';
+            nameInput.focus();
+
+            const catObj = appState.categories.find(c => c.id === categoryId);
+            showToast(`"${name}" (${formatCurrency(amount)}) adicionado em ${catObj ? catObj.name : ''}!`);
+        }
+
+        // Excluir um item
+        function deleteItem(itemId) {
+            const index = appState.items.findIndex(i => i.id === itemId);
+            if (index !== -1) {
+                const removed = appState.items[index];
+                appState.items.splice(index, 1);
+                saveState();
+                renderAll();
+                showToast(`Item "${removed.name}" removido.`);
+            }
+        }
+
+        // Abrir modal de edição de item
+        function openEditItemModal(itemId) {
+            const item = appState.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            document.getElementById('edit-item-id').value = item.id;
+            document.getElementById('edit-item-category').value = item.categoryId;
+            document.getElementById('edit-item-name').value = item.name;
+            document.getElementById('edit-item-amount').value = item.amount;
+
+            const modal = document.getElementById('edit-item-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEditItemModal() {
+            const modal = document.getElementById('edit-item-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleSaveEditedItem(event) {
+            event.preventDefault();
+            const id = document.getElementById('edit-item-id').value;
+            const categoryId = document.getElementById('edit-item-category').value;
+            const name = document.getElementById('edit-item-name').value.trim();
+            const amount = parseFloat(document.getElementById('edit-item-amount').value);
+
+            if (!name || isNaN(amount) || amount <= 0) return;
+
+            const item = appState.items.find(i => i.id === id);
+            if (item) {
+                item.categoryId = categoryId;
+                item.name = name;
+                item.amount = Math.round(amount * 100) / 100;
+                saveState();
+                renderAll();
+                closeEditItemModal();
+                showToast('Item atualizado com sucesso!');
+            }
+        }
+
+        // Rápida seleção de categoria no formulário superior ao clicar em "+ Adicionar para [Pessoa]"
+        function selectCategoryForNewItem(categoryId) {
+            const select = document.getElementById('item-category');
+            select.value = categoryId;
+            const nameInput = document.getElementById('item-name');
+            nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => nameInput.focus(), 300);
+        }
+
+        // Renderizar toda a aplicação
+        function renderAll() {
+            renderTopSummary();
+            renderCategoriesGrid();
+        }
+
+        // 1. Renderizar Resumo Geral do Topo
+        function renderTopSummary() {
+            const totalBudget = appState.totalBudget;
+            const totalSpent = appState.items.reduce((sum, item) => sum + item.amount, 0);
+            const totalRemaining = totalBudget - totalSpent;
+            const percentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+            document.getElementById('display-total-budget').textContent = formatCurrency(totalBudget);
+            document.getElementById('display-total-spent').textContent = formatCurrency(totalSpent);
+            
+            const count = appState.items.length;
+            document.getElementById('display-total-items-count').textContent = 
+                count === 1 ? '1 item lançado no total' : `${count} itens lançados no total`;
+
+            const remainingEl = document.getElementById('display-total-remaining');
+            const remainingCard = document.getElementById('remaining-card');
+            const remainingLabel = document.getElementById('remaining-label');
+            const remainingStatus = document.getElementById('remaining-status-text');
+            const remainingIconBox = document.getElementById('remaining-icon-box');
+            const remainingIcon = document.getElementById('remaining-icon');
+
+            remainingEl.textContent = formatCurrency(totalRemaining);
+
+            // Estilização condicional do Saldo Restante Geral
+            if (totalRemaining < 0) {
+                remainingCard.className = 'bg-rose-50/80 rounded-xl p-4 border border-rose-300 flex items-center justify-between transition-colors';
+                remainingLabel.className = 'text-xs font-semibold uppercase tracking-wider text-rose-700 block mb-1';
+                remainingEl.className = 'text-2xl sm:text-3xl font-extrabold text-rose-600';
+                remainingStatus.className = 'text-xs text-rose-600 font-semibold mt-1.5 block';
+                remainingStatus.textContent = `Orçamento ultrapassado em ${formatCurrency(Math.abs(totalRemaining))}!`;
+                remainingIconBox.className = 'w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0';
+                remainingIcon.className = 'ph-duotone ph-warning-octagon text-2xl';
+            } else if (percentage >= 85) {
+                remainingCard.className = 'bg-amber-50/80 rounded-xl p-4 border border-amber-300 flex items-center justify-between transition-colors';
+                remainingLabel.className = 'text-xs font-semibold uppercase tracking-wider text-amber-800 block mb-1';
+                remainingEl.className = 'text-2xl sm:text-3xl font-extrabold text-amber-700';
+                remainingStatus.className = 'text-xs text-amber-700 font-medium mt-1.5 block';
+                remainingStatus.textContent = 'Atenção: próximo do limite geral';
+                remainingIconBox.className = 'w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0';
+                remainingIcon.className = 'ph-duotone ph-warning text-2xl';
+            } else {
+                remainingCard.className = 'bg-emerald-50/70 rounded-xl p-4 border border-emerald-200/80 flex items-center justify-between transition-colors';
+                remainingLabel.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1';
+                remainingEl.className = 'text-2xl sm:text-3xl font-extrabold text-emerald-700';
+                remainingStatus.className = 'text-xs text-emerald-600 font-medium mt-1.5 block';
+                remainingStatus.textContent = 'Disponível para compras';
+                remainingIconBox.className = 'w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0';
+                remainingIcon.className = 'ph-duotone ph-piggy-bank text-2xl';
+            }
+
+            // Barra de progresso geral
+            const progressBar = document.getElementById('general-progress-bar');
+            const progressBadge = document.getElementById('general-progress-badge');
+            const clampedPercent = Math.min(percentage, 100);
+            progressBar.style.width = `${clampedPercent.toFixed(1)}%`;
+
+            if (percentage > 100) {
+                progressBar.className = 'h-full bg-rose-500 rounded-full transition-all duration-500';
+                progressBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-700';
+            } else if (percentage >= 85) {
+                progressBar.className = 'h-full bg-amber-500 rounded-full transition-all duration-500';
+                progressBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800';
+            } else {
+                progressBar.className = 'h-full bg-emerald-500 rounded-full transition-all duration-500';
+                progressBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700';
+            }
+            progressBadge.textContent = `${percentage.toFixed(1).replace('.', ',')}% utilizado`;
+
+            // Verificar se a soma das metas das subcategorias bate com o Orçamento Geral
+            const sumSubBudgets = appState.categories.reduce((acc, c) => acc + c.budget, 0);
+            const diff = Math.round((totalBudget - sumSubBudgets) * 100) / 100;
+            const warningBox = document.getElementById('allocation-warning');
+            const warningText = document.getElementById('allocation-warning-text');
+
+            if (Math.abs(diff) >= 0.01) {
+                warningBox.classList.remove('hidden');
+                if (diff > 0) {
+                    warningText.textContent = `A soma das metas individuais (${formatCurrency(sumSubBudgets)}) está ${formatCurrency(diff)} abaixo do orçamento geral de ${formatCurrency(totalBudget)}.`;
+                } else {
+                    warningText.textContent = `A soma das metas individuais (${formatCurrency(sumSubBudgets)}) ultrapassa o orçamento geral em ${formatCurrency(Math.abs(diff))}.`;
+                }
+            } else {
+                warningBox.classList.add('hidden');
+            }
+        }
+
+        // Paleta visual para os cards de cada subcategoria
+        const COLOR_THEMES = {
+            blue: {
+                badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
+                iconBg: 'bg-blue-100 text-blue-600',
+                headerBorder: 'border-t-4 border-t-blue-500'
+            },
+            purple: {
+                badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
+                iconBg: 'bg-purple-100 text-purple-600',
+                headerBorder: 'border-t-4 border-t-purple-500'
+            },
+            teal: {
+                badgeBg: 'bg-teal-50 text-teal-700 border-teal-200',
+                iconBg: 'bg-teal-100 text-teal-600',
+                headerBorder: 'border-t-4 border-t-teal-500'
+            },
+            amber: {
+                badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
+                iconBg: 'bg-amber-100 text-amber-700',
+                headerBorder: 'border-t-4 border-t-amber-500'
+            }
+        };
+
+        // 2. Renderizar os Cards de Johnson, Leandra, Emanuel e Outros Gastos
+        function renderCategoriesGrid() {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+
+            appState.categories.forEach(cat => {
+                const catItems = appState.items.filter(item => item.categoryId === cat.id);
+                const spent = catItems.reduce((sum, item) => sum + item.amount, 0);
+                const remaining = cat.budget - spent;
+                const percent = cat.budget > 0 ? (spent / cat.budget) * 100 : (spent > 0 ? 100 : 0);
+                const clampedPercent = Math.min(percent, 100);
+
+                const theme = COLOR_THEMES[cat.color] || COLOR_THEMES.blue;
+
+                // Definir cor de status da barra e saldo da subcategoria
+                let barColor = 'bg-emerald-500';
+                let statusBadge = `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">Restam ${formatCurrency(remaining)}</span>`;
+
+                if (remaining < 0) {
+                    barColor = 'bg-rose-500';
+                    statusBadge = `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1"><i class="ph-fill ph-warning-circle"></i> Excedido em ${formatCurrency(Math.abs(remaining))}</span>`;
+                } else if (percent >= 85) {
+                    barColor = 'bg-amber-500';
+                    statusBadge = `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">Restam ${formatCurrency(remaining)}</span>`;
+                }
+
+                // Montar lista de itens da pessoa
+                let itemsHtml = '';
+                if (catItems.length === 0) {
+                    itemsHtml = `
+                        <div class="py-6 text-center text-slate-400 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                            <i class="ph ph-coat-hanger text-2xl mb-1 block mx-auto text-slate-300"></i>
+                            <p class="text-xs">Nenhum item lançado para ${cat.name}</p>
+                        </div>
+                    `;
+                } else {
+                    itemsHtml = `
+                        <ul class="divide-y divide-slate-100 max-h-56 overflow-y-auto custom-scroll pr-1">
+                            ${catItems.map(item => `
+                                <li class="py-2.5 flex items-center justify-between gap-2 group animate-item">
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-sm font-medium text-slate-800 truncate">${escapeHtml(item.name)}</p>
+                                        <span class="text-[11px] text-slate-400">Adicionado em ${item.createdAt || 'hoje'}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <span class="text-sm font-bold text-slate-700">${formatCurrency(item.amount)}</span>
+                                        <div class="flex items-center gap-0.5">
+                                            <button onclick="openEditItemModal('${item.id}')" title="Editar item" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                                                <i class="ph ph-pencil-simple text-sm"></i>
+                                            </button>
+                                            <button onclick="deleteItem('${item.id}')" title="Excluir item" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
+                                                <i class="ph ph-trash text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex flex-col justify-between ${theme.headerBorder}`;
+                card.innerHTML = `
+                    <div>
+                        <!-- Cabeçalho do Card -->
+                        <div class="flex items-start justify-between gap-2 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl ${theme.iconBg} flex items-center justify-center text-xl shadow-2xs">
+                                    <span>${cat.emoji}</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-800 leading-tight">${cat.name}</h3>
+                                    <span class="text-xs text-slate-400">${cat.subtitle}</span>
+                                </div>
+                            </div>
+
+                            <button onclick="openBudgetModal('${cat.id}')" title="Editar meta de ${cat.name}" class="text-right group hover:bg-slate-50 p-1.5 -m-1.5 rounded-xl transition">
+                                <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold block">Meta Individual</span>
+                                <span class="text-sm font-bold text-slate-700 group-hover:text-indigo-600 flex items-center justify-end gap-1">
+                                    ${formatCurrency(cat.budget)}
+                                    <i class="ph ph-pencil-simple text-xs text-slate-400 group-hover:text-indigo-600"></i>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Resumo Numérico e Barra da Subcategoria -->
+                        <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200/60 mb-4">
+                            <div class="flex items-baseline justify-between mb-2">
+                                <div>
+                                    <span class="text-xs text-slate-500 block">Gasto acumulado</span>
+                                    <span class="text-lg font-extrabold text-slate-800">${formatCurrency(spent)}</span>
+                                </div>
+                                <div class="text-right">
+                                    ${statusBadge}
+                                </div>
+                            </div>
+
+                            <div class="w-full h-2.5 bg-slate-200/80 rounded-full overflow-hidden">
+                                <div class="h-full ${barColor} rounded-full transition-all duration-500" style="width: ${clampedPercent.toFixed(1)}%"></div>
+                            </div>
+                            <div class="flex justify-between items-center mt-1.5 text-[11px] text-slate-500">
+                                <span>${catItems.length} ${catItems.length === 1 ? 'peça/item' : 'peças/itens'}</span>
+                                <span>${percent.toFixed(0)}% da meta</span>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Compras da Subcategoria -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Itens Comprados</span>
+                                <button onclick="selectCategoryForNewItem('${cat.id}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                                    <i class="ph-bold ph-plus"></i> Adicionar para ${cat.name}
+                                </button>
+                            </div>
+                            ${itemsHtml}
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Funções do Modal de Orçamento e Metas
+        function openBudgetModal(focusCategoryId = null) {
+            const modal = document.getElementById('budget-modal');
+            const totalInput = document.getElementById('modal-total-budget');
+            const container = document.getElementById('modal-subcategories-inputs');
+
+            totalInput.value = appState.totalBudget.toFixed(2);
+            container.innerHTML = '';
+
+            appState.categories.forEach(cat => {
+                const spent = appState.items
+                    .filter(i => i.categoryId === cat.id)
+                    .reduce((s, i) => s + i.amount, 0);
+
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80';
+                row.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="text-lg">${cat.emoji}</span>
+                        <div class="truncate">
+                            <label for="modal-cat-${cat.id}" class="text-sm font-semibold text-slate-700 block truncate">${cat.name}</label>
+                            <span class="text-[11px] text-slate-400 block">Já gasto: ${formatCurrency(spent)}</span>
+                        </div>
+                    </div>
+                    <div class="relative w-36 shrink-0">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">R$</span>
+                        <input type="number" id="modal-cat-${cat.id}" data-cat-id="${cat.id}" step="0.01" min="0" required value="${cat.budget.toFixed(2)}" oninput="updateModalAllocationPreview()" class="modal-cat-input w-full bg-white border border-slate-300 text-slate-800 font-semibold text-sm rounded-lg pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right">
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            updateModalAllocationPreview();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (focusCategoryId) {
+                const target = document.getElementById(`modal-cat-${focusCategoryId}`);
+                if (target) setTimeout(() => { target.focus(); target.select(); }, 100);
+            }
+        }
+
+        function closeBudgetModal() {
+            const modal = document.getElementById('budget-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function updateModalAllocationPreview() {
+            const totalVal = parseFloat(document.getElementById('modal-total-budget').value) || 0;
+            const inputs = document.querySelectorAll('.modal-cat-input');
+            let sum = 0;
+            inputs.forEach(inp => {
+                sum += parseFloat(inp.value) || 0;
+            });
+
+            const box = document.getElementById('modal-allocation-box');
+            const sumEl = document.getElementById('modal-allocated-sum');
+            const diff = Math.round((totalVal - sum) * 100) / 100;
+
+            if (Math.abs(diff) < 0.01) {
+                box.className = 'p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs flex items-center justify-between text-emerald-800';
+                sumEl.innerHTML = `${formatCurrency(sum)} <span class="font-normal">(100% distribuído)</span>`;
+            } else if (diff > 0) {
+                box.className = 'p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs flex items-center justify-between text-amber-800';
+                sumEl.innerHTML = `${formatCurrency(sum)} <span class="font-normal">(Faltam ${formatCurrency(diff)})</span>`;
+            } else {
+                box.className = 'p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs flex items-center justify-between text-rose-800';
+                sumEl.innerHTML = `${formatCurrency(sum)} <span class="font-normal">(Passou ${formatCurrency(Math.abs(diff))})</span>`;
+            }
+        }
+
+        // Ajustar automaticamente a diferença na categoria "Outros Gastos" ou igualar o teto
+        function autoDistributeRemaining() {
+            const totalVal = parseFloat(document.getElementById('modal-total-budget').value) || 0;
+            const inputs = Array.from(document.querySelectorAll('.modal-cat-input'));
+            if (inputs.length === 0) return;
+
+            let sumExceptLast = 0;
+            for (let i = 0; i < inputs.length - 1; i++) {
+                sumExceptLast += parseFloat(inputs[i].value) || 0;
+            }
+            const lastInput = inputs[inputs.length - 1];
+            const remainder = Math.max(0, totalVal - sumExceptLast);
+            lastInput.value = remainder.toFixed(2);
+            updateModalAllocationPreview();
+        }
+
+        function handleSaveBudgets(event) {
+            event.preventDefault();
+            const newTotal = parseFloat(document.getElementById('modal-total-budget').value);
+            if (isNaN(newTotal) || newTotal < 0) return;
+
+            appState.totalBudget = Math.round(newTotal * 100) / 100;
+
+            const inputs = document.querySelectorAll('.modal-cat-input');
+            inputs.forEach(inp => {
+                const catId = inp.getAttribute('data-cat-id');
+                const val = parseFloat(inp.value);
+                const cat = appState.categories.find(c => c.id === catId);
+                if (cat && !isNaN(val) && val >= 0) {
+                    cat.budget = Math.round(val * 100) / 100;
+                }
+            });
+
+            saveState();
+            renderAll();
+            closeBudgetModal();
+            showToast('Orçamento e metas atualizados!');
+        }
+
+        // Modal de Resetar Dados
+        function openResetModal() {
+            const modal = document.getElementById('reset-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeResetModal() {
+            const modal = document.getElementById('reset-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmResetData() {
+            appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+            saveState();
+            renderAll();
+            closeResetModal();
+            showToast('Dados resetados para R$ 2.000,00!');
+        }
+
+        // Prevenir injeção de HTML nos nomes dos itens
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Inicializar na carga da página
+        window.onload = function () {
+            renderAll();
+        };
+    </script>
+</body>
+</html>
