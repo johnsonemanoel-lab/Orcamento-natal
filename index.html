@@ -309,15 +309,15 @@
     <!-- MODAL 3: CONEXÃO COM BANCO DE DADOS REAL   -->
     <!-- ========================================== -->
     <div id="database-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 animate-item my-8">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-200 animate-item my-8">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                         <i class="ph-fill ph-cloud-arrow-up text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-slate-800">Conexão com Banco de Dados</h3>
-                        <p class="text-xs text-slate-500">Funciona no GitHub Pages e sincroniza em tempo real</p>
+                        <h3 class="text-base font-bold text-slate-800">Firebase + Google Apps Script</h3>
+                        <p class="text-xs text-slate-500">Conecte o Firebase dentro do Google Script e use no GitHub Pages</p>
                     </div>
                 </div>
                 <button onclick="closeDatabaseModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
@@ -330,34 +330,53 @@
                 <div class="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 text-indigo-950 space-y-1.5">
                     <div class="font-bold flex items-center gap-1.5 text-indigo-700">
                         <i class="ph-fill ph-check-circle text-base"></i>
-                        Como deixar salvo direto no seu link do GitHub:
+                        Pronto para o seu link do GitHub Pages:
                     </div>
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        Você pode colar a URL do seu banco abaixo <strong>ou</strong> colocá-la na linha <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-mono">FIXED_CLOUD_DB_URL</code> no início do <code class="font-mono">&lt;script&gt;</code> antes do seu commit. Assim, qualquer pessoa que abrir o seu link do GitHub Pages já verá e salvará os dados no mesmo banco!
+                        Preencha a URL do seu <strong>Firebase Realtime Database</strong> abaixo. O código do <strong>Google Apps Script</strong> já será atualizado automaticamente com a URL do seu Firebase embutida! Para deixar fixo no seu commit do GitHub, basta colar a URL nas constantes <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-mono">FIXED_FIREBASE_URL</code> ou <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-mono">FIXED_GAS_URL</code> no início do <code class="font-mono">&lt;script&gt;</code>.
                     </p>
                 </div>
 
-                <!-- Campo único inteligente: aceita Firebase Realtime DB ou Google Apps Script -->
+                <!-- 1. URL do Firebase Realtime Database -->
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">
-                        URL do Banco na Nuvem (Firebase Realtime DB ou Google Script)
+                        1. URL do seu Firebase Realtime Database
                     </label>
-                    <input type="url" id="db-url-input" placeholder="Ex: https://seu-banco-default-rtdb.firebaseio.com/ ou https://script.google.com/..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="url" id="firebase-url-input" oninput="updateAppsScriptCodePreview()" placeholder="https://seu-projeto-default-rtdb.firebaseio.com/" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs font-mono rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <p class="text-[11px] text-slate-400 mt-1">
-                        Aceita a URL do <strong>Firebase Realtime Database</strong> ou do <strong>Google Apps Script Web App</strong>.
+                        Ao digitar aqui, a URL já é inserida automaticamente dentro do Google Script abaixo e também pode ser usada direto pelo app.
                     </p>
+                </div>
+
+                <!-- 2. URL do Google Apps Script (Opcional se usar como ponte) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        2. URL do Web App do Google Apps Script (Opcional)
+                    </label>
+                    <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/SEU_SCRIPT_ID/exec" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs font-mono rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <!-- Visualizador do Código do Google Apps Script com a URL do Firebase incluída -->
+                <div class="bg-slate-900 text-slate-100 rounded-xl p-3.5 border border-slate-800">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                            <i class="ph-fill ph-code text-sm"></i>
+                            Código Google Apps Script (com URL do Firebase)
+                        </span>
+                        <button type="button" onclick="copyAppsScriptTemplate()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer">
+                            <i class="ph-bold ph-copy"></i> Copiar Script
+                        </button>
+                    </div>
+                    <pre id="gas-code-preview" class="text-[11px] font-mono text-emerald-300 overflow-x-auto max-h-40 custom-scroll leading-relaxed select-all"></pre>
                 </div>
 
                 <!-- Botões de Ação da Nuvem -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="saveDatabaseUrl()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-xs">
-                        <i class="ph-bold ph-plugs-connected"></i> Conectar e Salvar na Nuvem
+                <div class="flex flex-wrap items-center gap-2 pt-1">
+                    <button type="button" onclick="saveDatabaseUrl()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                        <i class="ph-bold ph-plugs-connected"></i> Salvar e Sincronizar Agora
                     </button>
-                    <button type="button" onclick="syncFromCloud(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5">
-                        <i class="ph-bold ph-arrows-clockwise"></i> Carregar da Nuvem
-                    </button>
-                    <button type="button" onclick="copyAppsScriptTemplate()" class="ml-auto text-indigo-600 hover:text-indigo-800 font-semibold text-xs py-2 px-2 flex items-center gap-1" title="Copiar código caso queira usar Planilha Google como banco">
-                        <i class="ph ph-copy"></i> Código p/ Planilha Google
+                    <button type="button" onclick="syncFromCloud(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-arrows-clockwise"></i> Carregar Dados da Nuvem
                     </button>
                 </div>
 
@@ -403,15 +422,18 @@
 
     <script>
         // ============================================================================
-        // CONFIGURAÇÃO PARA O SEU GITHUB PAGES:
-        // Se você colar a URL do seu Firebase Realtime Database ou Google Apps Script
-        // dentro das aspas abaixo antes de fazer o commit no GitHub, o seu link abrirá
-        // já conectado ao banco de dados em qualquer celular ou computador!
+        // CONFIGURAÇÃO FIXA PARA O SEU COMMIT NO GITHUB PAGES:
+        // Cole a URL do seu Firebase Realtime Database em FIXED_FIREBASE_URL e/ou
+        // a URL do seu Google Apps Script em FIXED_GAS_URL antes do commit.
+        // Assim, qualquer pessoa que abrir o link do seu GitHub Pages já carregará
+        // e salvará os dados automaticamente no banco de dados!
         // ============================================================================
-        const FIXED_CLOUD_DB_URL = ""; 
+        const FIXED_FIREBASE_URL = "https://orcamento-fim-de-ano-default-rtdb.firebaseio.com/"; 
+        const FIXED_GAS_URL = ""; 
 
         const STORAGE_KEY = 'orcamento_fim_de_ano_data_v3';
-        const DB_URL_STORAGE_KEY = 'orcamento_fim_de_ano_db_url_v3';
+        const FIREBASE_STORAGE_KEY = 'orcamento_fim_de_ano_firebase_url_v3';
+        const GAS_STORAGE_KEY = 'orcamento_fim_de_ano_gas_url_v3';
 
         // Estado Inicial Padrão (R$ 2.000 divididos entre Johnson, Leandra, Emanuel e Outros)
         const DEFAULT_STATE = {
@@ -426,7 +448,8 @@
         };
 
         let appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
-        let activeDbUrl = FIXED_CLOUD_DB_URL || localStorage.getItem(DB_URL_STORAGE_KEY) || '';
+        let activeFirebaseUrl = localStorage.getItem(FIREBASE_STORAGE_KEY) || FIXED_FIREBASE_URL || '';
+        let activeGasUrl = localStorage.getItem(GAS_STORAGE_KEY) || FIXED_GAS_URL || '';
 
         // Mapa de cores elegantes para cada pessoa
         const THEME_MAP = {
@@ -457,8 +480,13 @@
         };
 
         // ============================================================================
-        // PERSISTÊNCIA HÍBRIDA (LOCALSTORAGE + BANCO DE DADOS NA NUVEM)
+        // PERSISTÊNCIA HÍBRIDA (LOCALSTORAGE + FIREBASE + GOOGLE APPS SCRIPT)
         // ============================================================================
+
+        function hasCloudConfigured() {
+            const isDefaultPlaceholder = activeFirebaseUrl.includes('orcamento-fim-de-ano-default-rtdb.firebaseio.com');
+            return Boolean((activeFirebaseUrl && !isDefaultPlaceholder) || activeGasUrl);
+        }
 
         function loadLocalState() {
             try {
@@ -476,7 +504,7 @@
             } catch (err) {
                 console.error('Erro ao ler dados locais:', err);
             }
-            updateDbStatusUI(activeDbUrl ? 'connected' : 'local');
+            updateDbStatusUI(hasCloudConfigured() ? 'connected' : 'local');
         }
 
         function saveState(syncWithCloud = true) {
@@ -487,13 +515,9 @@
             }
             renderAll();
 
-            if (syncWithCloud && activeDbUrl) {
+            if (syncWithCloud && hasCloudConfigured()) {
                 syncToCloud();
             }
-        }
-
-        function isFirebaseRealtimeUrl(url) {
-            return url.includes('firebaseio.com') || url.includes('firebasedatabase.app');
         }
 
         function formatFirebaseEndpoint(url) {
@@ -505,35 +529,42 @@
         }
 
         async function syncToCloud() {
-            if (!activeDbUrl) return;
+            if (!hasCloudConfigured()) return;
             updateDbStatusUI('syncing');
 
+            const payload = {
+                action: 'save',
+                firebaseUrl: activeFirebaseUrl,
+                updatedAt: Date.now(),
+                state: appState
+            };
+
             try {
-                if (isFirebaseRealtimeUrl(activeDbUrl)) {
-                    const endpoint = formatFirebaseEndpoint(activeDbUrl);
+                let savedOk = false;
+
+                // 1. Se tiver URL do Firebase válida configurada, salva direto no Firebase Realtime DB
+                if (activeFirebaseUrl && !activeFirebaseUrl.includes('orcamento-fim-de-ano-default-rtdb.firebaseio.com')) {
+                    const endpoint = formatFirebaseEndpoint(activeFirebaseUrl);
                     const res = await fetch(endpoint, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            updatedAt: Date.now(),
-                            state: appState
-                        })
+                        body: JSON.stringify(payload)
                     });
-                    if (!res.ok) throw new Error('Falha HTTP Firebase');
-                } else {
-                    // Google Apps Script Web App
-                    await fetch(activeDbUrl, {
+                    if (res.ok) savedOk = true;
+                }
+
+                // 2. Se tiver URL do Google Apps Script configurada, envia para o Google Script (que também grava no Firebase via UrlFetchApp)
+                if (activeGasUrl) {
+                    await fetch(activeGasUrl, {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({
-                            action: 'save',
-                            updatedAt: Date.now(),
-                            state: appState
-                        })
+                        body: JSON.stringify(payload)
                     });
+                    savedOk = true;
                 }
-                updateDbStatusUI('synced');
+
+                updateDbStatusUI(savedOk ? 'synced' : 'local');
             } catch (err) {
                 console.error('Erro ao sincronizar na nuvem:', err);
                 updateDbStatusUI('error');
@@ -541,8 +572,8 @@
         }
 
         async function syncFromCloud(silent = true) {
-            if (!activeDbUrl) {
-                if (!silent) showToast('Informe a URL do banco primeiro.', true);
+            if (!hasCloudConfigured()) {
+                if (!silent) showToast('Configure a URL do seu Firebase ou Google Script.', true);
                 return;
             }
             updateDbStatusUI('syncing');
@@ -550,16 +581,20 @@
             try {
                 let remoteState = null;
 
-                if (isFirebaseRealtimeUrl(activeDbUrl)) {
-                    const endpoint = formatFirebaseEndpoint(activeDbUrl);
+                // Tenta buscar do Firebase Realtime Database primeiro
+                if (activeFirebaseUrl && !activeFirebaseUrl.includes('orcamento-fim-de-ano-default-rtdb.firebaseio.com')) {
+                    const endpoint = formatFirebaseEndpoint(activeFirebaseUrl);
                     const res = await fetch(endpoint + '?t=' + Date.now());
                     if (res.ok) {
                         const data = await res.json();
                         if (data && data.state) remoteState = data.state;
                     }
-                } else {
-                    const sep = activeDbUrl.includes('?') ? '&' : '?';
-                    const res = await fetch(activeDbUrl + sep + 'action=load&t=' + Date.now());
+                }
+
+                // Se não veio do Firebase direto e houver URL do Google Apps Script, busca via Google Apps Script
+                if (!remoteState && activeGasUrl) {
+                    const sep = activeGasUrl.includes('?') ? '&' : '?';
+                    const res = await fetch(activeGasUrl + sep + 'action=load&t=' + Date.now());
                     if (res.ok) {
                         const data = await res.json();
                         if (data && data.state) remoteState = data.state;
@@ -575,9 +610,8 @@
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
                     renderAll();
                     updateDbStatusUI('synced');
-                    if (!silent) showToast('Dados sincronizados da nuvem!');
+                    if (!silent) showToast('Dados carregados da nuvem com sucesso!');
                 } else {
-                    // Se o banco na nuvem ainda estiver vazio, envia o estado atual para inicializá-lo
                     await syncToCloud();
                     if (!silent) showToast('Banco conectado e inicializado com seus dados!');
                 }
@@ -609,428 +643,68 @@
         }
 
         // ============================================================================
-        // RENDERIZAÇÃO DA INTERFACE (DESIGN ORIGINAL LIMPO)
+        // MODAL DE BANCO DE DADOS E GERADOR DO GOOGLE SCRIPT COM URL DO FIREBASE
         // ============================================================================
 
-        function formatCurrency(val) {
-            return Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        function buildAppsScriptCode(fbUrlInput) {
+            const cleanFbUrl = (fbUrlInput || FIXED_FIREBASE_URL || 'https://SEU-PROJETO-default-rtdb.firebaseio.com/')
+                .trim()
+                .replace(/\/+$/, '');
+
+            return `// =========================================================
+// GOOGLE APPS SCRIPT CONECTADO AO FIREBASE REALTIME DATABASE
+// =========================================================
+const FIREBASE_DB_URL = "${cleanFbUrl}/orcamento_fim_ano.json";
+
+function doGet(e) {
+  try {
+    // 1. Busca os dados diretamente da URL do Firebase
+    var response = UrlFetchApp.fetch(FIREBASE_DB_URL, { muteHttpExceptions: true });
+    var content = response.getContentText();
+    if (content && content !== "null") {
+      return ContentService.createTextOutput(content)
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (err) {}
+
+  // Fallback local nas propriedades do Google Script
+  var backup = PropertiesService.getScriptProperties().getProperty("DB_ORCAMENTO");
+  return ContentService.createTextOutput(backup || '{"state":null}')
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var body = e.postData.contents;
+  // Salva cópia no Google Script
+  PropertiesService.getScriptProperties().setProperty("DB_ORCAMENTO", body);
+
+  // 2. Envia e salva diretamente na URL do Firebase Realtime Database
+  try {
+    UrlFetchApp.fetch(FIREBASE_DB_URL, {
+      method: "put",
+      contentType: "application/json",
+      payload: body,
+      muteHttpExceptions: true
+    });
+  } catch (err) {}
+
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, firebase: FIREBASE_DB_URL }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
         }
 
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+        function updateAppsScriptCodePreview() {
+            const fbInput = document.getElementById('firebase-url-input');
+            const preview = document.getElementById('gas-code-preview');
+            if (!preview) return;
+            preview.textContent = buildAppsScriptCode(fbInput ? fbInput.value : activeFirebaseUrl);
         }
-
-        function renderAll() {
-            renderTopSummary();
-            renderCategoriesGrid();
-        }
-
-        function renderTopSummary() {
-            const totalBudget = appState.totalBudget;
-            const totalSpent = appState.items.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-            const purchasedItems = appState.items.filter(item => item.purchased);
-            const totalPurchased = purchasedItems.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-            const totalRemaining = totalBudget - totalSpent;
-            const pct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-
-            document.getElementById('display-total-budget').textContent = formatCurrency(totalBudget);
-            document.getElementById('display-total-spent').textContent = formatCurrency(totalSpent);
-            document.getElementById('display-purchased-summary').innerHTML = `<i class="ph-bold ph-check"></i> ${formatCurrency(totalPurchased)} comprados (${purchasedItems.length}/${appState.items.length})`;
-            document.getElementById('display-total-items-count').textContent = appState.items.length === 1 ? '1 item' : `${appState.items.length} itens`;
-            document.getElementById('display-total-remaining').textContent = formatCurrency(totalRemaining);
-
-            // Estilização dinâmica do Card de Saldo Restante
-            const remCard = document.getElementById('remaining-card');
-            const remLabel = document.getElementById('remaining-label');
-            const remValue = document.getElementById('display-total-remaining');
-            const remStatus = document.getElementById('remaining-status-text');
-            const remIconBox = document.getElementById('remaining-icon-box');
-            const remIcon = document.getElementById('remaining-icon');
-
-            if (totalRemaining < 0) {
-                remCard.className = 'bg-rose-50/80 rounded-2xl p-4 sm:p-5 border border-rose-200 flex items-center justify-between transition-colors';
-                remLabel.className = 'text-xs font-semibold uppercase tracking-wider text-rose-700 block mb-1';
-                remValue.className = 'text-2xl sm:text-3xl font-extrabold text-rose-700 tracking-tight';
-                remStatus.className = 'text-xs text-rose-600 font-medium mt-1.5 block';
-                remStatus.textContent = `Orçamento excedido em ${formatCurrency(Math.abs(totalRemaining))}`;
-                remIconBox.className = 'w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0';
-                remIcon.className = 'ph-duotone ph-warning-circle text-2xl';
-            } else if (pct >= 85) {
-                remCard.className = 'bg-amber-50/80 rounded-2xl p-4 sm:p-5 border border-amber-200 flex items-center justify-between transition-colors';
-                remLabel.className = 'text-xs font-semibold uppercase tracking-wider text-amber-700 block mb-1';
-                remValue.className = 'text-2xl sm:text-3xl font-extrabold text-amber-700 tracking-tight';
-                remStatus.className = 'text-xs text-amber-700 font-medium mt-1.5 block';
-                remStatus.textContent = 'Atenção: perto do limite geral';
-                remIconBox.className = 'w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0';
-                remIcon.className = 'ph-duotone ph-Trend-up text-2xl';
-            } else {
-                remCard.className = 'bg-emerald-50/70 rounded-2xl p-4 sm:p-5 border border-emerald-200/80 flex items-center justify-between transition-colors';
-                remLabel.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1';
-                remValue.className = 'text-2xl sm:text-3xl font-extrabold text-emerald-700 tracking-tight';
-                remStatus.className = 'text-xs text-emerald-600 font-medium mt-1.5 block';
-                remStatus.textContent = 'Disponível do orçamento';
-                remIconBox.className = 'w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0';
-                remIcon.className = 'ph-duotone ph-piggy-bank text-2xl';
-            }
-
-            // Barra de Progresso Geral
-            const bar = document.getElementById('general-progress-bar');
-            const progText = document.getElementById('general-progress-text');
-            const clampedPct = Math.min(100, Math.max(0, pct));
-            bar.style.width = `${clampedPct}%`;
-            progText.textContent = `${pct.toFixed(1).replace('.0', '')}% utilizado`;
-
-            if (pct > 100) {
-                bar.className = 'h-full bg-rose-600 rounded-full transition-all duration-500';
-            } else if (pct >= 85) {
-                bar.className = 'h-full bg-amber-500 rounded-full transition-all duration-500';
-            } else {
-                bar.className = 'h-full bg-indigo-600 rounded-full transition-all duration-500';
-            }
-        }
-
-        function renderCategoriesGrid() {
-            const grid = document.getElementById('categories-grid');
-            grid.innerHTML = '';
-
-            appState.categories.forEach(cat => {
-                const theme = THEME_MAP[cat.color] || THEME_MAP.indigo;
-                const catItems = appState.items.filter(i => i.categoryId === cat.id);
-                const spent = catItems.reduce((sum, i) => sum + Number(i.amount || 0), 0);
-                const purchasedSum = catItems.filter(i => i.purchased).reduce((sum, i) => sum + Number(i.amount || 0), 0);
-                const purchasedCount = catItems.filter(i => i.purchased).length;
-                const remaining = cat.budget - spent;
-                const pct = cat.budget > 0 ? (spent / cat.budget) * 100 : (spent > 0 ? 100 : 0);
-                const clampedPct = Math.min(100, Math.max(0, pct));
-
-                let barColor = theme.bar;
-                if (remaining < 0) barColor = 'bg-rose-500';
-                else if (pct >= 85) barColor = 'bg-amber-500';
-
-                const remBadgeClass = remaining < 0
-                    ? 'text-rose-700 bg-rose-50 border-rose-200'
-                    : 'text-emerald-700 bg-emerald-50 border-emerald-200/80';
-
-                // Monta a lista de itens com Checkbox para dar OK quando comprar
-                let itemsListHtml = '';
-                if (catItems.length === 0) {
-                    itemsListHtml = `
-                        <div class="py-8 text-center text-slate-400">
-                            <i class="ph ph-coat-hanger text-2xl mb-1 block opacity-60"></i>
-                            <p class="text-xs">Nenhuma peça lançada para ${escapeHtml(cat.name)}.</p>
-                        </div>
-                    `;
-                } else {
-                    itemsListHtml = catItems.map(item => {
-                        const isBought = Boolean(item.purchased);
-                        return `
-                            <div class="animate-item group flex items-center justify-between gap-2.5 p-2.5 rounded-xl border transition ${isBought ? 'bg-emerald-50/40 border-emerald-200/70' : 'bg-slate-50/70 hover:bg-white border-slate-200/70'}">
-                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                                    <!-- Checkbox Customizado para dar o OK na compra -->
-                                    <button type="button" onclick="toggleItemPurchased('${item.id}')" title="${isBought ? 'Desmarcar compra' : 'Marcar como comprado (OK)'}" class="w-5 h-5 rounded-md flex items-center justify-center transition cursor-pointer shrink-0 ${isBought ? 'bg-emerald-600 text-white border border-emerald-600 shadow-2xs' : 'bg-white border-2 border-slate-300 hover:border-indigo-500 text-transparent'}">
-                                        <i class="ph-bold ph-check text-xs"></i>
-                                    </button>
-
-                                    <div class="min-w-0 flex-1 cursor-pointer" onclick="toggleItemPurchased('${item.id}')">
-                                        <div class="flex items-center gap-1.5">
-                                            <p class="text-xs sm:text-sm font-semibold truncate transition ${isBought ? 'line-through text-slate-400' : 'text-slate-700'}">
-                                                ${escapeHtml(item.name)}
-                                            </p>
-                                            ${isBought ? '<span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 shrink-0">OK</span>' : ''}
-                                        </div>
-                                        <span class="text-[11px] text-slate-400">${item.createdAt || 'Hoje'}</span>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center gap-1.5 shrink-0">
-                                    <span class="text-xs sm:text-sm font-bold ${isBought ? 'line-through text-slate-400' : 'text-slate-800'} mr-1">
-                                        ${formatCurrency(item.amount)}
-                                    </span>
-                                    <button type="button" onclick="openEditItemModal('${item.id}')" title="Editar" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
-                                        <i class="ph ph-pencil-simple text-sm"></i>
-                                    </button>
-                                    <button type="button" onclick="deleteItem('${item.id}')" title="Excluir" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
-                                        <i class="ph ph-trash text-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-
-                const card = document.createElement('div');
-                card.className = `bg-white rounded-2xl shadow-xs border border-slate-200/80 ${theme.headerBorder} p-5 flex flex-col justify-between`;
-                card.innerHTML = `
-                    <div>
-                        <!-- Topo do Card da Pessoa -->
-                        <div class="flex items-start justify-between gap-2 mb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl ${theme.iconBg} flex items-center justify-center text-xl shadow-2xs">
-                                    ${cat.emoji}
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-slate-800 leading-snug">${escapeHtml(cat.name)}</h3>
-                                    <p class="text-xs text-slate-400">${escapeHtml(cat.subtitle)}</p>
-                                </div>
-                            </div>
-
-                            <button onclick="openBudgetModal('${cat.id}')" class="text-xs font-semibold px-2.5 py-1 rounded-lg border ${theme.badgeBg} hover:opacity-80 transition flex items-center gap-1" title="Editar meta de ${escapeHtml(cat.name)}">
-                                <span>Meta: ${formatCurrency(cat.budget)}</span>
-                                <i class="ph ph-pencil-simple text-[11px]"></i>
-                            </button>
-                        </div>
-
-                        <!-- Resumo Financeiro da Pessoa -->
-                        <div class="grid grid-cols-3 gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/60 mb-3 text-center">
-                            <div>
-                                <span class="text-[10px] font-semibold uppercase text-slate-400 block">Lançado</span>
-                                <span class="text-xs sm:text-sm font-bold text-slate-800">${formatCurrency(spent)}</span>
-                            </div>
-                            <div class="border-x border-slate-200/70 px-1">
-                                <span class="text-[10px] font-semibold uppercase text-emerald-600 block">Comprado ✅</span>
-                                <span class="text-xs sm:text-sm font-bold text-emerald-600">${formatCurrency(purchasedSum)}</span>
-                            </div>
-                            <div>
-                                <span class="text-[10px] font-semibold uppercase text-slate-400 block">${remaining < 0 ? 'Excedido' : 'Disponível'}</span>
-                                <span class="text-xs sm:text-sm font-bold ${remaining < 0 ? 'text-rose-600' : 'text-emerald-700'}">${formatCurrency(Math.abs(remaining))}</span>
-                            </div>
-                        </div>
-
-                        <!-- Barra de Progresso Individual -->
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                                <span>${purchasedCount} de ${catItems.length} comprados</span>
-                                <span class="font-semibold">${pct.toFixed(0)}% da meta</span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full ${barColor} rounded-full transition-all duration-500" style="width: ${clampedPct}%"></div>
-                            </div>
-                        </div>
-
-                        <!-- Lista de Roupas / Itens -->
-                        <div class="space-y-2 max-h-60 overflow-y-auto custom-scroll pr-0.5">
-                            ${itemsListHtml}
-                        </div>
-                    </div>
-
-                    <!-- Botão Rápido no Rodapé do Card -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-[11px] font-medium px-2 py-0.5 rounded-md border ${remBadgeClass}">
-                            ${remaining < 0 ? `Passou ${formatCurrency(Math.abs(remaining))}` : `Resta ${formatCurrency(remaining)}`}
-                        </span>
-                        <button type="button" onclick="selectCategoryForNewItem('${cat.id}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
-                            <i class="ph-bold ph-plus"></i> Adicionar para ${escapeHtml(cat.name)}
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // ============================================================================
-        // INTERAÇÕES DO USUÁRIO (ADICIONAR, CHECKBOX COMPRADO, EDITAR, EXCLUIR)
-        // ============================================================================
-
-        function fillQuickTag(label) {
-            const input = document.getElementById('item-name');
-            input.value = label;
-            input.focus();
-        }
-
-        function selectCategoryForNewItem(categoryId) {
-            const select = document.getElementById('item-category');
-            select.value = categoryId;
-            const nameInput = document.getElementById('item-name');
-            nameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => nameInput.focus(), 250);
-        }
-
-        function handleAddExpense(event) {
-            event.preventDefault();
-            const categoryId = document.getElementById('item-category').value;
-            const nameInput = document.getElementById('item-name');
-            const amountInput = document.getElementById('item-amount');
-
-            const name = nameInput.value.trim();
-            const amount = parseFloat(amountInput.value);
-
-            if (!name || isNaN(amount) || amount <= 0) {
-                showToast('Informe a descrição e um valor válido.', true);
-                return;
-            }
-
-            const newItem = {
-                id: 'item_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-                categoryId,
-                name,
-                amount: Math.round(amount * 100) / 100,
-                purchased: false,
-                createdAt: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-            };
-
-            appState.items.unshift(newItem);
-            saveState();
-
-            nameInput.value = '';
-            amountInput.value = '';
-            nameInput.focus();
-
-            const cat = appState.categories.find(c => c.id === categoryId);
-            showToast(`"${name}" adicionado em ${cat ? cat.name : ''}!`);
-        }
-
-        function toggleItemPurchased(itemId) {
-            const item = appState.items.find(i => i.id === itemId);
-            if (!item) return;
-            item.purchased = !item.purchased;
-            saveState();
-            showToast(item.purchased ? `✅ "${item.name}" marcado como comprado!` : `"${item.name}" desmarcado.`);
-        }
-
-        function deleteItem(itemId) {
-            const index = appState.items.findIndex(i => i.id === itemId);
-            if (index !== -1) {
-                const removed = appState.items.splice(index, 1)[0];
-                saveState();
-                showToast(`"${removed.name}" removido.`);
-            }
-        }
-
-        function openEditItemModal(itemId) {
-            const item = appState.items.find(i => i.id === itemId);
-            if (!item) return;
-            document.getElementById('edit-item-id').value = item.id;
-            document.getElementById('edit-item-category').value = item.categoryId;
-            document.getElementById('edit-item-name').value = item.name;
-            document.getElementById('edit-item-amount').value = item.amount;
-
-            const modal = document.getElementById('edit-item-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeEditItemModal() {
-            const modal = document.getElementById('edit-item-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function handleSaveEditedItem(event) {
-            event.preventDefault();
-            const id = document.getElementById('edit-item-id').value;
-            const categoryId = document.getElementById('edit-item-category').value;
-            const name = document.getElementById('edit-item-name').value.trim();
-            const amount = parseFloat(document.getElementById('edit-item-amount').value);
-
-            const item = appState.items.find(i => i.id === id);
-            if (item && name && !isNaN(amount) && amount > 0) {
-                item.categoryId = categoryId;
-                item.name = name;
-                item.amount = Math.round(amount * 100) / 100;
-                saveState();
-                closeEditItemModal();
-                showToast('Item atualizado!');
-            }
-        }
-
-        // ============================================================================
-        // MODAL DE METAS E ORÇAMENTO
-        // ============================================================================
-
-        function openBudgetModal(focusCatId = null) {
-            const modal = document.getElementById('budget-modal');
-            document.getElementById('modal-total-budget').value = appState.totalBudget.toFixed(2);
-            const container = document.getElementById('modal-subcategories-inputs');
-            container.innerHTML = '';
-
-            appState.categories.forEach(cat => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80';
-                div.innerHTML = `
-                    <span class="text-xs sm:text-sm font-semibold text-slate-700">${cat.emoji} ${escapeHtml(cat.name)}</span>
-                    <input type="number" id="modal-cat-${cat.id}" data-cat-id="${cat.id}" step="0.01" min="0" required value="${cat.budget.toFixed(2)}" oninput="updateModalAllocationPreview()" class="modal-cat-input w-28 bg-white border border-slate-300 text-slate-800 font-semibold text-sm rounded-lg px-2.5 py-1 text-right focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                `;
-                container.appendChild(div);
-            });
-
-            updateModalAllocationPreview();
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            if (focusCatId) {
-                const el = document.getElementById(`modal-cat-${focusCatId}`);
-                if (el) setTimeout(() => { el.focus(); el.select(); }, 100);
-            }
-        }
-
-        function closeBudgetModal() {
-            const modal = document.getElementById('budget-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function updateModalAllocationPreview() {
-            const total = parseFloat(document.getElementById('modal-total-budget').value) || 0;
-            let sum = 0;
-            document.querySelectorAll('.modal-cat-input').forEach(inp => {
-                sum += parseFloat(inp.value) || 0;
-            });
-            const diff = Math.round((total - sum) * 100) / 100;
-            const sumEl = document.getElementById('modal-allocated-sum');
-
-            if (Math.abs(diff) < 0.01) {
-                sumEl.className = 'font-bold text-emerald-600';
-                sumEl.textContent = `${formatCurrency(sum)} (100% distribuído)`;
-            } else if (diff > 0) {
-                sumEl.className = 'font-bold text-amber-600';
-                sumEl.textContent = `${formatCurrency(sum)} (Faltam ${formatCurrency(diff)})`;
-            } else {
-                sumEl.className = 'font-bold text-rose-600';
-                sumEl.textContent = `${formatCurrency(sum)} (Passou ${formatCurrency(Math.abs(diff))})`;
-            }
-        }
-
-        function autoDistributeRemaining() {
-            const total = parseFloat(document.getElementById('modal-total-budget').value) || 0;
-            const inputs = Array.from(document.querySelectorAll('.modal-cat-input'));
-            if (!inputs.length) return;
-            let sumOthers = 0;
-            for (let i = 0; i < inputs.length - 1; i++) {
-                sumOthers += parseFloat(inputs[i].value) || 0;
-            }
-            inputs[inputs.length - 1].value = Math.max(0, total - sumOthers).toFixed(2);
-            updateModalAllocationPreview();
-        }
-
-        function handleSaveBudgets(event) {
-            event.preventDefault();
-            const newTotal = parseFloat(document.getElementById('modal-total-budget').value);
-            if (!isNaN(newTotal) && newTotal > 0) {
-                appState.totalBudget = Math.round(newTotal * 100) / 100;
-            }
-            document.querySelectorAll('.modal-cat-input').forEach(inp => {
-                const cat = appState.categories.find(c => c.id === inp.getAttribute('data-cat-id'));
-                const val = parseFloat(inp.value);
-                if (cat && !isNaN(val) && val >= 0) {
-                    cat.budget = Math.round(val * 100) / 100;
-                }
-            });
-            saveState();
-            closeBudgetModal();
-            showToast('Metas atualizadas com sucesso!');
-        }
-
-        // ============================================================================
-        // MODAL DE BANCO DE DADOS E BACKUP
-        // ============================================================================
 
         function openDatabaseModal() {
-            document.getElementById('db-url-input').value = activeDbUrl;
+            document.getElementById('firebase-url-input').value = activeFirebaseUrl;
+            document.getElementById('gas-url-input').value = activeGasUrl;
+            updateAppsScriptCodePreview();
+
             const modal = document.getElementById('database-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1043,35 +717,36 @@
         }
 
         function saveDatabaseUrl() {
-            const url = document.getElementById('db-url-input').value.trim();
-            activeDbUrl = url;
-            localStorage.setItem(DB_URL_STORAGE_KEY, activeDbUrl);
-            if (activeDbUrl) {
+            const fbUrl = document.getElementById('firebase-url-input').value.trim();
+            const gasUrl = document.getElementById('gas-url-input').value.trim();
+
+            activeFirebaseUrl = fbUrl;
+            activeGasUrl = gasUrl;
+
+            localStorage.setItem(FIREBASE_STORAGE_KEY, activeFirebaseUrl);
+            localStorage.setItem(GAS_STORAGE_KEY, activeGasUrl);
+            updateAppsScriptCodePreview();
+
+            if (hasCloudConfigured()) {
                 syncToCloud();
-                showToast('Conectado! Dados sincronizados na nuvem.');
+                showToast('Conectado! Firebase / Google Script sincronizados.');
                 closeDatabaseModal();
             } else {
                 updateDbStatusUI('local');
-                showToast('Usando armazenamento local neste aparelho.');
+                showToast('Salvo localmente neste navegador.');
             }
         }
 
         function copyAppsScriptTemplate() {
-            const code = `function doGet() {
-  var raw = PropertiesService.getScriptProperties().getProperty('DB_ORCAMENTO');
-  return ContentService.createTextOutput(raw || '{"state":null}').setMimeType(ContentService.MimeType.JSON);
-}
-function doPost(e) {
-  PropertiesService.getScriptProperties().setProperty('DB_ORCAMENTO', e.postData.contents);
-  return ContentService.createTextOutput('{"ok":true}').setMimeType(ContentService.MimeType.JSON);
-}`;
+            const fbInput = document.getElementById('firebase-url-input');
+            const code = buildAppsScriptCode(fbInput ? fbInput.value : activeFirebaseUrl);
             const temp = document.createElement('textarea');
             temp.value = code;
             document.body.appendChild(temp);
             temp.select();
             document.execCommand('copy');
             document.body.removeChild(temp);
-            showToast('Código para Google Apps Script copiado!');
+            showToast('Código Google Script com URL do Firebase copiado!');
         }
 
         function exportBackupJson() {
@@ -1145,7 +820,7 @@ function doPost(e) {
         window.onload = function () {
             loadLocalState();
             renderAll();
-            if (activeDbUrl) {
+            if (hasCloudConfigured()) {
                 syncFromCloud(true);
             }
         };
