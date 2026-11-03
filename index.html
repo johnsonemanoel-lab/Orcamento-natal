@@ -3,1446 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orçamento de Fim de Ano - Roupas & Vestuário</title>
-    <!-- Tailwind CSS -->
+    <title>Orçamento de Final de Ano - Roupas e Vestuário</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-        }
-        /* Scrollbar suave para listas de itens */
-        .custom-scroll::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-item {
-            animation: fadeIn 0.2s ease-out forwards;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen pb-14">
 
-    <!-- Cabeçalho Original Elegante e Limpo -->
+    <!-- Cabeçalho Limpo e Elegante -->
     <header class="bg-gradient-to-r from-indigo-950 via-indigo-900 to-violet-900 text-white shadow-md sticky top-0 z-30">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-indigo-200 shadow-inner shrink-0">
-                    <i class="ph-fill ph-shopping-bag-open text-2xl"></i>
+                <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-xl shadow-inner shrink-0">
+                    🛍️
                 </div>
                 <div>
-                    <h1 class="text-base sm:text-xl font-bold tracking-tight leading-tight">
-                        Orçamento de Fim de Ano
-                    </h1>
-                    <p class="text-xs text-indigo-200/80">Roupas & Vestuário da Família</p>
+                    <h1 class="text-base sm:text-xl font-bold tracking-tight leading-tight">Orçamento de Final de Ano</h1>
+                    <p class="text-xs text-indigo-200/80">Controle de Roupas e Vestuário da Família</p>
                 </div>
             </div>
-
             <div class="flex items-center gap-2">
-                <!-- Botão Discreto de Status do Banco de Dados -->
-                <button onclick="openDatabaseModal()" id="db-status-btn" class="text-xs bg-white/10 hover:bg-white/20 text-white font-medium px-3 py-2 rounded-xl border border-white/15 transition flex items-center gap-2 shadow-xs">
-                    <span id="db-status-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span id="db-status-label" class="hidden sm:inline">Banco de Dados</span>
-                    <i class="ph ph-cloud-check text-base text-indigo-200"></i>
+                <button type="button" onclick="window.abrirModalMetas()" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl border border-white/15 transition flex items-center gap-1.5 cursor-pointer">
+                    <span>⚙️ Ajustar Metas</span>
                 </button>
-
-                <!-- Botão Ajustar Metas -->
-                <button onclick="openBudgetModal()" class="text-xs bg-white/10 hover:bg-white/20 text-white font-medium px-3 py-2 rounded-xl border border-white/15 transition flex items-center gap-1.5 shadow-xs">
-                    <i class="ph ph-sliders-horizontal text-base text-indigo-200"></i>
-                    <span class="hidden sm:inline">Metas</span>
-                </button>
-
-                <!-- Botão Resetar Discreto -->
-                <button onclick="openResetModal()" title="Zerar lançamentos" class="text-xs bg-rose-500/15 hover:bg-rose-500/30 text-rose-200 p-2 rounded-xl border border-rose-400/20 transition flex items-center justify-center">
-                    <i class="ph ph-arrow-counter-clockwise text-base"></i>
+                <button type="button" onclick="window.abrirModalBanco()" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl border border-white/15 transition flex items-center gap-2 cursor-pointer">
+                    <span id="cloud-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span id="cloud-status-text">Local</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Conteúdo Principal -->
     <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
 
-        <!-- 1. Painel de Resumo Geral (Design Original de 3 Cards Limpos) -->
-        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                
-                <!-- Card 1: Orçamento Geral -->
-                <div onclick="openBudgetModal()" class="group cursor-pointer bg-slate-50/80 hover:bg-indigo-50/40 rounded-2xl p-4 sm:p-5 border border-slate-200/70 hover:border-indigo-200 transition flex items-center justify-between">
+        <!-- 1. Painel de Resumo Geral no Topo (3 Cards Elegantes) -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Card 1: Orçamento Geral -->
+            <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 flex flex-col justify-between">
+                <div class="flex items-start justify-between">
                     <div>
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Orçamento Geral</span>
-                        <span id="display-total-budget" class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">R$ 2.000,00</span>
-                        <span class="text-xs text-indigo-600 font-medium mt-1.5 flex items-center gap-1 group-hover:underline">
-                            <i class="ph ph-pencil-simple"></i> Ajustar teto ou metas
-                        </span>
+                        <span id="resumo-orcamento-geral" class="text-2xl sm:text-3xl font-extrabold text-slate-800">R$ 2.000,00</span>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-100/80 text-indigo-600 flex items-center justify-center shrink-0">
-                        <i class="ph-duotone ph-wallet text-2xl"></i>
+                    <button type="button" onclick="window.abrirModalMetas()" class="text-xs text-indigo-600 hover:underline font-semibold">✏️ Editar</button>
+                </div>
+                <div class="mt-4">
+                    <div class="flex justify-between text-xs text-slate-500 mb-1">
+                        <span>Progresso Geral</span>
+                        <span id="resumo-progresso-texto" class="font-bold text-slate-700">0%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="resumo-progresso-barra" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
-
-                <!-- Card 2: Total Gasto / Lançado + Indicador de Comprado (OK) -->
-                <div class="bg-slate-50/80 rounded-2xl p-4 sm:p-5 border border-slate-200/70 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Total Gasto / Planejado</span>
-                        <span id="display-total-spent" class="text-2xl sm:text-3xl font-extrabold text-indigo-600 tracking-tight">R$ 0,00</span>
-                        <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                            <span id="display-purchased-summary" class="text-xs font-medium text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md inline-flex items-center gap-1">
-                                <i class="ph-bold ph-check"></i> R$ 0,00 comprados
-                            </span>
-                            <span id="display-total-items-count" class="text-xs text-slate-400">0 itens</span>
-                        </div>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-amber-100/70 text-amber-600 flex items-center justify-center shrink-0">
-                        <i class="ph-duotone ph-shopping-cart text-2xl"></i>
-                    </div>
-                </div>
-
-                <!-- Card 3: Saldo Restante Geral -->
-                <div id="remaining-card" class="bg-emerald-50/70 rounded-2xl p-4 sm:p-5 border border-emerald-200/80 flex items-center justify-between transition-colors">
-                    <div>
-                        <span id="remaining-label" class="text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1">Saldo Restante Geral</span>
-                        <span id="display-total-remaining" class="text-2xl sm:text-3xl font-extrabold text-emerald-700 tracking-tight">R$ 2.000,00</span>
-                        <span id="remaining-status-text" class="text-xs text-emerald-600 font-medium mt-1.5 block">Disponível do orçamento</span>
-                    </div>
-                    <div id="remaining-icon-box" class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                        <i id="remaining-icon" class="ph-duotone ph-piggy-bank text-2xl"></i>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- Barra de Progresso Geral -->
-            <div class="mt-5 pt-4 border-t border-slate-100">
-                <div class="flex items-center justify-between text-xs mb-2">
-                    <span class="font-semibold text-slate-600 flex items-center gap-1.5">
-                        <span>Uso do Orçamento Geral</span>
-                        <span id="general-allocation-pill" class="text-[11px] font-normal text-slate-400"></span>
+            <!-- Card 2: Total Lançado + Já Comprado (OK) -->
+            <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 flex flex-col justify-between">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Total Lançado</span>
+                        <span id="resumo-total-lancado" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">R$ 0,00</span>
+                    </div>
+                    <span class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">🛒</span>
+                </div>
+                <div class="mt-3">
+                    <span id="resumo-comprado-badge" class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-lg">
+                        ✅ Já Comprado (OK): R$ 0,00 (0 de 0 itens)
                     </span>
-                    <span id="general-progress-text" class="font-bold text-slate-700">0% utilizado</span>
                 </div>
-                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
-                    <div id="general-progress-bar" class="h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+            </div>
+
+            <!-- Card 3: Saldo Disponível Geral -->
+            <div id="card-saldo-geral" class="bg-emerald-50/70 rounded-2xl p-5 shadow-xs border border-emerald-200/80 flex flex-col justify-between transition-colors">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span id="label-saldo-geral" class="text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1">Saldo Disponível Geral</span>
+                        <span id="resumo-saldo-geral" class="text-2xl sm:text-3xl font-extrabold text-emerald-700">R$ 2.000,00</span>
+                    </div>
+                    <span class="w-10 h-10 rounded-xl bg-white/80 flex items-center justify-center text-lg shadow-2xs">💰</span>
                 </div>
+                <p id="status-saldo-geral" class="text-xs text-emerald-700 font-medium mt-3">Dentro do limite planejado</p>
             </div>
         </section>
 
-        <!-- 2. Formulário de Lançamento Rápido -->
+        <!-- 2. Formulário de Novo Item -->
         <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph-fill ph-plus-circle text-indigo-600 text-lg"></i>
-                    Adicionar Roupa ou Item ao Orçamento
-                </h2>
-                <span class="text-xs text-slate-400 hidden sm:inline">Abate automaticamente da pessoa e do saldo geral</span>
-            </div>
-
-            <form id="expense-form" onsubmit="window.handleAddExpense(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                <!-- Pessoa / Subcategoria -->
-                <div class="sm:col-span-3">
-                    <label for="item-category" class="block text-xs font-semibold text-slate-600 mb-1">Para quem é?</label>
-                    <div class="relative">
-                        <select id="item-category" required class="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-sm font-medium rounded-xl px-3.5 py-2.5 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-                            <option value="johnson">👔 Johnson</option>
-                            <option value="leandra">👗 Leandra</option>
-                            <option value="emanuel">👕 Emanuel</option>
-                            <option value="outros">🛍️ Outros Gastos</option>
-                        </select>
-                        <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <!-- Descrição da Peça -->
+            <h2 class="text-sm sm:text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <span>➕ Adicionar Roupa ou Vestuário ao Orçamento</span>
+            </h2>
+            <form onsubmit="window.adicionarItem(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
                 <div class="sm:col-span-5">
-                    <label for="item-name" class="block text-xs font-semibold text-slate-600 mb-1">Peça de Roupa / Descrição</label>
-                    <input type="text" id="item-name" required placeholder="Ex: Camisa polo, Vestido, Calçado..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Descrição da Peça</label>
+                    <input type="text" id="input-descricao" required placeholder="Ex: Camisa social, Calça jeans, Tênis..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
                 </div>
-
-                <!-- Valor (R$) -->
                 <div class="sm:col-span-2">
-                    <label for="item-amount" class="block text-xs font-semibold text-slate-600 mb-1">Valor (R$)</label>
-                    <input type="text" inputmode="decimal" id="item-amount" required placeholder="Ex: 89,90" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Valor (R$)</label>
+                    <input type="text" inputmode="decimal" id="input-valor" required placeholder="Ex: 89,90" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
                 </div>
-
-                <!-- Botão Adicionar -->
-                <div class="sm:col-span-2 flex items-end">
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow-xs hover:shadow transition flex items-center justify-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-plus"></i>
-                        <span>Lançar</span>
-                    </button>
-                </div>
-            </form>
-
-            <!-- Atalhos Rápidos de Vestuário -->
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5 flex-wrap">
-                <span class="text-[11px] font-medium text-slate-400 mr-1">Sugestões rápidas:</span>
-                <button type="button" onclick="window.fillQuickTag('Camisa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👕 Camisa</button>
-                <button type="button" onclick="window.fillQuickTag('Calça / Bermuda')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👖 Calça / Bermuda</button>
-                <button type="button" onclick="window.fillQuickTag('Calçado / Tênis')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👟 Calçado</button>
-                <button type="button" onclick="window.fillQuickTag('Vestido / Conjunto')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👗 Vestido / Conjunto</button>
-                <button type="button" onclick="window.fillQuickTag('Roupa Íntima / Meias')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">🧦 Básicos</button>
-                <button type="button" onclick="window.fillQuickTag('Acessório')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">🕶️ Acessório</button>
-            </div>
-        </section>
-
-        <!-- 2. Formulário de Lançamento Rápido -->
-        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph-fill ph-plus-circle text-indigo-600 text-lg"></i>
-                    Adicionar Roupa ou Item ao Orçamento
-                </h2>
-                <span class="text-xs text-slate-400 hidden sm:inline">Abate automaticamente da pessoa e do saldo geral</span>
-            </div>
-
-            <form id="expense-form" onsubmit="handleAddExpense(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                <!-- Pessoa / Subcategoria -->
                 <div class="sm:col-span-3">
-                    <label for="item-category" class="block text-xs font-semibold text-slate-600 mb-1">Para quem é?</label>
-                    <div class="relative">
-                        <select id="item-category" required class="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-sm font-medium rounded-xl px-3.5 py-2.5 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-                            <option value="johnson">👔 Johnson</option>
-                            <option value="leandra">👗 Leandra</option>
-                            <option value="emanuel">👕 Emanuel</option>
-                            <option value="outros">🛍️ Outros Gastos</option>
-                        </select>
-                        <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <!-- Descrição da Peça -->
-                <div class="sm:col-span-5">
-                    <label for="item-name" class="block text-xs font-semibold text-slate-600 mb-1">Peça de Roupa / Descrição</label>
-                    <input type="text" id="item-name" required placeholder="Ex: Camisa polo, Vestido, Calçado..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-                </div>
-
-                <!-- Valor (R$) -->
-                <div class="sm:col-span-2">
-                    <label for="item-amount" class="block text-xs font-semibold text-slate-600 mb-1">Valor (R$)</label>
-                    <input type="number" id="item-amount" required step="0.01" min="0.01" placeholder="0,00" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
-                </div>
-
-                <!-- Botão Adicionar -->
-                <div class="sm:col-span-2 flex items-end">
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm py-2.5 px-4 rounded-xl shadow-xs hover:shadow transition flex items-center justify-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-plus"></i>
-                        <span>Lançar</span>
-                    </button>
-                </div>
-            </form>
-
-            <!-- Atalhos Rápidos de Vestuário -->
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5 flex-wrap">
-                <span class="text-[11px] font-medium text-slate-400 mr-1">Sugestões rápidas:</span>
-                <button type="button" onclick="fillQuickTag('Camisa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition">👕 Camisa</button>
-                <button type="button" onclick="fillQuickTag('Calça / Bermuda')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition">👖 Calça / Bermuda</button>
-                <button type="button" onclick="fillQuickTag('Calçado / Tênis')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition">👟 Calçado</button>
-                <button type="button" onclick="fillQuickTag('Vestido / Blusa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition">👗 Vestido / Blusa</button>
-                <button type="button" onclick="fillQuickTag('Roupa Íntima / Meias')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition">🧦 Básicos</button>
-                <button type="button" onclick="fillQuickTag('Acessório')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition">🕶️ Acessório</button>
-            </div>
-        </section>
-
-        <!-- 3. Cards das Pessoas / Subcategorias (Johnson, Leandra, Emanuel, Outros) -->
-        <section>
-            <div class="flex items-center justify-between mb-3 px-1">
-                <h2 class="text-sm sm:text-base font-bold text-slate-700 flex items-center gap-2">
-                    <i class="ph-fill ph-users-three text-indigo-600 text-lg"></i>
-                    Acompanhamento por Pessoa
-                </h2>
-                <span class="text-xs text-slate-500">Marque a caixinha ✅ quando efetuar a compra</span>
-            </div>
-
-            <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- Renderizado via JavaScript -->
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ========================================== -->
-    <!-- MODAL 1: AJUSTAR METAS E ORÇAMENTO GERAL   -->
-    <!-- ========================================== -->
-    <div id="budget-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 animate-item">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph-fill ph-sliders-horizontal text-indigo-600 text-lg"></i>
-                    Ajustar Orçamento e Metas
-                </h3>
-                <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                    <i class="ph ph-x text-lg"></i>
-                </button>
-            </div>
-
-            <form onsubmit="handleSaveBudgets(event)" class="mt-4 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orçamento Geral Total (R$)</label>
-                    <input type="number" id="modal-total-budget" step="0.01" min="1" required oninput="updateModalAllocationPreview()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 font-bold text-base rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-
-                <div class="space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Metas por Pessoa</label>
-                        <button type="button" onclick="autoDistributeRemaining()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold">
-                            Ajustar resto em "Outros"
-                        </button>
-                    </div>
-                    <div id="modal-subcategories-inputs" class="space-y-2"></div>
-                </div>
-
-                <div id="modal-allocation-box" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
-                    <span class="font-medium text-slate-600">Soma das metas:</span>
-                    <span id="modal-allocated-sum" class="font-bold">R$ 2.000,00</span>
-                </div>
-
-                <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeBudgetModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-xs">
-                        Salvar Alterações
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- MODAL 2: EDITAR ITEM                       -->
-    <!-- ========================================== -->
-    <div id="edit-item-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 animate-item">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 class="text-base font-bold text-slate-800">Editar Item</h3>
-                <button onclick="closeEditItemModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                    <i class="ph ph-x text-lg"></i>
-                </button>
-            </div>
-            <form onsubmit="handleSaveEditedItem(event)" class="mt-4 space-y-3">
-                <input type="hidden" id="edit-item-id">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Pessoa / Categoria</label>
-                    <select id="edit-item-category" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3 py-2">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Subcategoria (Pessoa)</label>
+                    <select id="input-categoria" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-medium rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
                         <option value="johnson">👔 Johnson</option>
                         <option value="leandra">👗 Leandra</option>
                         <option value="emanuel">👕 Emanuel</option>
                         <option value="outros">🛍️ Outros Gastos</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Descrição da Roupa / Item</label>
-                    <input type="text" id="edit-item-name" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3 py-2">
+                <div class="sm:col-span-2 flex items-end">
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs sm:text-sm py-2.5 px-3 rounded-xl shadow-xs transition cursor-pointer">
+                        Adicionar ao Orçamento
+                    </button>
                 </div>
+            </form>
+
+            <!-- Chips Rápidos Clicáveis -->
+            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs text-slate-400 mr-1">Preencher rápido:</span>
+                <button type="button" onclick="window.preencherChip('Camisa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👕 Camisa</button>
+                <button type="button" onclick="window.preencherChip('Calça / Sarja')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👖 Calça / Sarja</button>
+                <button type="button" onclick="window.preencherChip('Calçado')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👟 Calçado</button>
+                <button type="button" onclick="window.preencherChip('Vestido / Roupa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👗 Vestido / Roupa</button>
+                <button type="button" onclick="window.preencherChip('Acessório')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">🎁 Acessório</button>
+            </div>
+        </section>
+
+        <!-- 3. Grid com os 4 Cards de Subcategorias -->
+        <section id="grid-categorias" class="grid grid-cols-1 md:grid-cols-2 gap-5"></section>
+    </main>
+
+    <!-- Modal: Ajustar Metas -->
+    <div id="modal-metas" class="fixed inset-0 bg-slate-900/60 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-800">⚙️ Ajustar Orçamento e Metas</h3>
+                <button type="button" onclick="window.fecharModalMetas()" class="text-slate-400 hover:text-slate-600 font-bold text-lg px-2">✕</button>
+            </div>
+            <form onsubmit="window.salvarMetas(event)" class="mt-4 space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Valor (R$)</label>
-                    <input type="number" id="edit-item-amount" step="0.01" min="0.01" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl px-3 py-2">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Orçamento Geral Total (R$)</label>
+                    <input type="text" inputmode="decimal" id="meta-geral-input" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 font-bold text-base rounded-xl px-3.5 py-2">
                 </div>
-                <div class="flex items-center justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeEditItemModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700">Salvar</button>
+                <div id="metas-categorias-inputs" class="space-y-2 pt-2"></div>
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="window.fecharModalMetas()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Salvar Metas</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 3: CONEXÃO COM BANCO DE DADOS REAL   -->
-    <!-- ========================================== -->
-    <div id="database-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-200 animate-item my-8">
+    <!-- Modal: Nuvem / Banco -->
+    <div id="modal-banco" class="fixed inset-0 bg-slate-900/60 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                        <i class="ph-fill ph-cloud-arrow-up text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-bold text-slate-800">Firebase + Google Apps Script</h3>
-                        <p class="text-xs text-slate-500">Conecte o Firebase dentro do Google Script e use no GitHub Pages</p>
-                    </div>
-                </div>
-                <button onclick="closeDatabaseModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-                    <i class="ph ph-x text-lg"></i>
-                </button>
+                <h3 class="text-base font-bold text-slate-800">☁️ Conexão com Nuvem / Banco</h3>
+                <button type="button" onclick="window.fecharModalBanco()" class="text-slate-400 hover:text-slate-600 font-bold text-lg px-2">✕</button>
             </div>
-
-            <div class="mt-4 space-y-4 text-xs sm:text-sm">
-                <!-- Explicação clara para o commit do GitHub -->
-                <div class="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 text-indigo-950 space-y-1.5">
-                    <div class="font-bold flex items-center gap-1.5 text-indigo-700">
-                        <i class="ph-fill ph-check-circle text-base"></i>
-                        Pronto para o seu link do GitHub Pages:
-                    </div>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        Preencha a URL do seu <strong>Firebase Realtime Database</strong> abaixo. O código do <strong>Google Apps Script</strong> já será atualizado automaticamente com a URL do seu Firebase embutida! Para deixar fixo no seu commit do GitHub, basta colar a URL nas constantes <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-mono">FIXED_FIREBASE_URL</code> ou <code class="bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 font-mono">FIXED_GAS_URL</code> no início do <code class="font-mono">&lt;script&gt;</code>.
-                    </p>
-                </div>
-
-                <!-- 1. URL do Firebase Realtime Database -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
-                        1. URL do seu Firebase Realtime Database
-                    </label>
-                    <input type="url" id="firebase-url-input" oninput="updateAppsScriptCodePreview()" placeholder="https://seu-projeto-default-rtdb.firebaseio.com/" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs font-mono rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <p class="text-[11px] text-slate-400 mt-1">
-                        Ao digitar aqui, a URL já é inserida automaticamente dentro do Google Script abaixo e também pode ser usada direto pelo app.
-                    </p>
-                </div>
-
-                <!-- 2. URL do Google Apps Script (Opcional se usar como ponte) -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">
-                        2. URL do Web App do Google Apps Script (Opcional)
-                    </label>
-                    <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/SEU_SCRIPT_ID/exec" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs font-mono rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-
-                <!-- Visualizador do Código do Google Apps Script com a URL do Firebase incluída -->
-                <div class="bg-slate-900 text-slate-100 rounded-xl p-3.5 border border-slate-800">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-[11px] font-semibold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
-                            <i class="ph-fill ph-code text-sm"></i>
-                            Código Google Apps Script (com URL do Firebase)
-                        </span>
-                        <button type="button" onclick="copyAppsScriptTemplate()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer">
-                            <i class="ph-bold ph-copy"></i> Copiar Script
-                        </button>
-                    </div>
-                    <pre id="gas-code-preview" class="text-[11px] font-mono text-emerald-300 overflow-x-auto max-h-40 custom-scroll leading-relaxed select-all"></pre>
-                </div>
-
-                <!-- Botões de Ação da Nuvem -->
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                    <button type="button" onclick="saveDatabaseUrl()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer">
-                        <i class="ph-bold ph-plugs-connected"></i> Salvar e Sincronizar Agora
-                    </button>
-                    <button type="button" onclick="syncFromCloud(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-3.5 py-2.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-arrows-clockwise"></i> Carregar Dados da Nuvem
-                    </button>
-                </div>
-
-                <!-- Backup Rápido em Arquivo -->
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                    <span class="text-xs text-slate-500">Backup manual em arquivo:</span>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="exportBackupJson()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-                            <i class="ph ph-download-simple"></i> Baixar JSON
-                        </button>
-                        <label class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg transition flex items-center gap-1 cursor-pointer">
-                            <i class="ph ph-upload-simple"></i> Importar
-                            <input type="file" accept=".json" onchange="importBackupJson(event)" class="hidden">
-                        </label>
-                    </div>
+            <div class="mt-4 space-y-3">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Cole abaixo a URL do seu <strong>Firebase Realtime Database</strong> (terminando em <code class="bg-slate-100 px-1 rounded">.json</code>) ou a URL do seu <strong>Google Apps Script</strong> (<code class="bg-slate-100 px-1 rounded">/exec</code>).
+                </p>
+                <input type="url" id="input-cloud-url" placeholder="https://seu-banco-default-rtdb.firebaseio.com/orcamento.json" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs font-mono rounded-xl px-3.5 py-2.5">
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="window.fecharModalBanco()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Fechar</button>
+                    <button type="button" onclick="window.salvarConfigBanco()" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Salvar e Sincronizar</button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- MODAL 4: CONFIRMAR RESET                   -->
-    <!-- ========================================== -->
-    <div id="reset-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-6 shadow-xl border border-slate-200 text-center animate-item">
-            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">
-                <i class="ph-fill ph-warning text-2xl"></i>
-            </div>
-            <h3 class="text-base font-bold text-slate-800">Zerar Orçamento?</h3>
-            <p class="text-xs text-slate-500 mt-1">Isso apagará os itens lançados e restaurará o orçamento inicial de R$ 2.000,00.</p>
-            <div class="flex items-center gap-2 mt-5">
-                <button onclick="closeResetModal()" class="flex-1 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200">Cancelar</button>
-                <button onclick="confirmResetData()" class="flex-1 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700">Zerar Tudo</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast de Feedback -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-slate-700">
-        <i id="toast-icon" class="ph-fill ph-check-circle text-emerald-400 text-lg"></i>
-        <span id="toast-message">Salvo com sucesso!</span>
     </div>
 
     <script>
-        // ============================================================================
-        // CONFIGURAÇÃO FIXA PARA O SEU COMMIT NO GITHUB PAGES:
-        // Se você quiser que o link do seu GitHub Pages já abra conectado ao banco sem
-        // precisar digitar nada na tela, cole sua URL abaixo antes de fazer o commit:
-        // ============================================================================
-        const FIXED_FIREBASE_URL = ""; // Ex: "https://seu-projeto-default-rtdb.firebaseio.com/"
-        const FIXED_GAS_URL = "";      // Ex: "https://script.google.com/macros/s/SEU_ID/exec"
+        const FIXED_DB_URL = ""; // Cole aqui sua URL do Firebase (.json) ou do Google Script (/exec) antes do commit no GitHub
+        const LOCAL_KEY = 'orcamento_familia_2026';
+        const CLOUD_URL_KEY = 'orcamento_cloud_url';
 
-        const STORAGE_KEY = 'orcamento_fim_de_ano_data_v4';
-        const FIREBASE_STORAGE_KEY = 'orcamento_fim_de_ano_firebase_url_v4';
-        const GAS_STORAGE_KEY = 'orcamento_fim_de_ano_gas_url_v4';
-
-        // Estado Inicial Padrão (R$ 2.000 divididos entre Johnson, Leandra, Emanuel e Outros)
-        const DEFAULT_STATE = {
-            totalBudget: 2000.00,
-            categories: [
-                { id: 'johnson', name: 'Johnson', subtitle: 'Roupas & Vestuário', emoji: '👔', color: 'indigo', budget: 600.00 },
-                { id: 'leandra', name: 'Leandra', subtitle: 'Roupas & Vestuário', emoji: '👗', color: 'purple', budget: 600.00 },
-                { id: 'emanuel', name: 'Emanuel', subtitle: 'Roupas & Vestuário', emoji: '👕', color: 'teal', budget: 500.00 },
-                { id: 'outros', name: 'Outros Gastos', subtitle: 'Vestuário Extra & Geral', emoji: '🛍️', color: 'amber', budget: 300.00 }
+        const INITIAL_STATE = {
+            orcamentoGeral: 2000,
+            categorias: [
+                { id: 'johnson', nome: 'Johnson', emoji: '👔', cor: 'indigo', meta: 600 },
+                { id: 'leandra', nome: 'Leandra', emoji: '👗', cor: 'rose', meta: 600 },
+                { id: 'emanuel', nome: 'Emanuel', emoji: '👕', cor: 'emerald', meta: 500 },
+                { id: 'outros', nome: 'Outros Gastos', emoji: '🛍️', cor: 'amber', meta: 300 }
             ],
-            items: []
+            itens: []
         };
 
-        let appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
-        let activeFirebaseUrl = (localStorage.getItem(FIREBASE_STORAGE_KEY) || FIXED_FIREBASE_URL || '').trim();
-        let activeGasUrl = (localStorage.getItem(GAS_STORAGE_KEY) || FIXED_GAS_URL || '').trim();
+        let state = JSON.parse(JSON.stringify(INITIAL_STATE));
 
-        // Mapa de cores elegantes para cada subcategoria
-        const THEME_MAP = {
-            indigo: {
-                badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
-                iconBg: 'bg-indigo-100/80 text-indigo-600',
-                bar: 'bg-indigo-600',
-                btnBg: 'bg-indigo-600 hover:bg-indigo-700',
-                headerBorder: 'border-t-4 border-t-indigo-500'
-            },
-            purple: {
-                badgeBg: 'bg-rose-50 text-rose-700 border-rose-200/80',
-                iconBg: 'bg-rose-100/80 text-rose-600',
-                bar: 'bg-rose-500',
-                btnBg: 'bg-rose-600 hover:bg-rose-700',
-                headerBorder: 'border-t-4 border-t-rose-500'
-            },
-            teal: {
-                badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
-                iconBg: 'bg-emerald-100/80 text-emerald-600',
-                bar: 'bg-emerald-600',
-                btnBg: 'bg-emerald-600 hover:bg-emerald-700',
-                headerBorder: 'border-t-4 border-t-emerald-500'
-            },
-            amber: {
-                badgeBg: 'bg-amber-50 text-amber-700 border-amber-200/80',
-                iconBg: 'bg-amber-100/80 text-amber-600',
-                bar: 'bg-amber-500',
-                btnBg: 'bg-amber-600 hover:bg-amber-700',
-                headerBorder: 'border-t-4 border-t-amber-500'
+        function formatarMoeda(valor) {
+            return (Number(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function lerValorNumerico(texto) {
+            if (typeof texto === 'number') return texto;
+            const limpo = String(texto || '').replace(/[R$\s]/g, '').replace(',', '.');
+            const num = parseFloat(limpo);
+            return isNaN(num) ? 0 : Math.round(num * 100) / 100;
+        }
+
+        function obterUrlNuvem() {
+            let url = (localStorage.getItem(CLOUD_URL_KEY) || FIXED_DB_URL || '').trim();
+            if (url && url.includes('firebaseio.com') && !url.endsWith('.json')) {
+                url = url.replace(/\/+$/, '') + '/orcamento_familia.json';
             }
-        };
-
-        // ============================================================================
-        // FUNÇÕES UTILITÁRIAS (FORMATAÇÃO BRL E CONVERSÃO SEGURA DE VALORES)
-        // ============================================================================
-
-        function formatCurrency(value) {
-            const num = Number(value) || 0;
-            return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            return url;
         }
 
-        function parseCurrencyInput(raw) {
-            if (typeof raw === 'number') return raw;
-            if (!raw) return 0;
-            let str = String(raw).trim().replace(/[R$\s]/g, '');
-            // Se tiver vírgula e ponto (ex: 1.250,50), remove o ponto de milhar e troca vírgula por ponto
-            if (str.includes(',') && str.includes('.')) {
-                str = str.replace(/\./g, '').replace(',', '.');
-            } else if (str.includes(',')) {
-                str = str.replace(',', '.');
-            }
-            const parsed = parseFloat(str);
-            return isNaN(parsed) ? 0 : Math.round(parsed * 100) / 100;
-        }
-
-        function escapeHtml(str) {
-            return String(str || '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        // ============================================================================
-        // RENDERIZAÇÃO COMPLETA DA INTERFACE (PAINEL GERAL + 4 PESSOAS)
-        // ============================================================================
-
-        function renderAll() {
-            renderTopSummary();
-            renderCategoriesGrid();
-        }
-
-        function renderTopSummary() {
-            const totalBudget = Number(appState.totalBudget) || 2000;
-            const totalSpent = appState.items.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
-            const purchasedItems = appState.items.filter(item => Boolean(item.purchased));
-            const totalPurchased = purchasedItems.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
-            const totalRemaining = totalBudget - totalSpent;
-
-            // Atualiza textos principais
-            document.getElementById('display-total-budget').textContent = formatCurrency(totalBudget);
-            document.getElementById('display-total-spent').textContent = formatCurrency(totalSpent);
-            document.getElementById('display-purchased-summary').innerHTML =
-                `<i class="ph-bold ph-check"></i> ${formatCurrency(totalPurchased)} comprados (${purchasedItems.length}/${appState.items.length})`;
-            document.getElementById('display-total-items-count').textContent =
-                `${appState.items.length} ${appState.items.length === 1 ? 'item lançado' : 'itens lançados'}`;
-
-            // Card de Saldo Restante Geral com alerta dinâmico de cor
-            const remCard = document.getElementById('remaining-card');
-            const remLabel = document.getElementById('remaining-label');
-            const remValue = document.getElementById('display-total-remaining');
-            const remStatus = document.getElementById('remaining-status-text');
-            const remIconBox = document.getElementById('remaining-icon-box');
-            const remIcon = document.getElementById('remaining-icon');
-
-            remValue.textContent = formatCurrency(totalRemaining);
-
-            if (totalRemaining < 0) {
-                remCard.className = 'bg-rose-50/80 rounded-2xl p-4 sm:p-5 border border-rose-200 flex items-center justify-between transition-colors';
-                remLabel.className = 'text-xs font-semibold uppercase tracking-wider text-rose-700 block mb-1';
-                remValue.className = 'text-2xl sm:text-3xl font-extrabold text-rose-700 tracking-tight';
-                remStatus.className = 'text-xs text-rose-600 font-semibold mt-1.5 block';
-                remStatus.textContent = `Orçamento excedido em ${formatCurrency(Math.abs(totalRemaining))}`;
-                remIconBox.className = 'w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0';
-                remIcon.className = 'ph-duotone ph-warning-circle text-2xl';
-            } else if (totalRemaining <= totalBudget * 0.15) {
-                remCard.className = 'bg-amber-50/80 rounded-2xl p-4 sm:p-5 border border-amber-200 flex items-center justify-between transition-colors';
-                remLabel.className = 'text-xs font-semibold uppercase tracking-wider text-amber-700 block mb-1';
-                remValue.className = 'text-2xl sm:text-3xl font-extrabold text-amber-700 tracking-tight';
-                remStatus.className = 'text-xs text-amber-700 font-medium mt-1.5 block';
-                remStatus.textContent = 'Atenção: saldo final próximo do limite';
-                remIconBox.className = 'w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0';
-                remIcon.className = 'ph-duotone ph-scales text-2xl';
+        function atualizarStatusNuvem(sincronizado) {
+            const dot = document.getElementById('cloud-dot');
+            const txt = document.getElementById('cloud-status-text');
+            const url = obterUrlNuvem();
+            if (url && sincronizado) {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+                txt.textContent = 'Sincronizado';
             } else {
-                remCard.className = 'bg-emerald-50/70 rounded-2xl p-4 sm:p-5 border border-emerald-200/80 flex items-center justify-between transition-colors';
-                remLabel.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1';
-                remValue.className = 'text-2xl sm:text-3xl font-extrabold text-emerald-700 tracking-tight';
-                remStatus.className = 'text-xs text-emerald-600 font-medium mt-1.5 block';
-                remStatus.textContent = 'Disponível dentro do orçamento geral';
-                remIconBox.className = 'w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0';
-                remIcon.className = 'ph-duotone ph-piggy-bank text-2xl';
-            }
-
-            // Barra de Progresso Geral
-            const rawPercent = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-            const clampedPercent = Math.min(100, Math.max(0, rawPercent));
-            const progressBar = document.getElementById('general-progress-bar');
-            const progressText = document.getElementById('general-progress-text');
-            const allocPill = document.getElementById('general-allocation-pill');
-
-            progressBar.style.width = `${clampedPercent.toFixed(1)}%`;
-            progressText.textContent = `${rawPercent.toFixed(1).replace('.', ',')}% utilizado`;
-
-            if (rawPercent > 100) {
-                progressBar.className = 'h-full bg-rose-600 rounded-full transition-all duration-500 ease-out';
-            } else if (rawPercent >= 85) {
-                progressBar.className = 'h-full bg-amber-500 rounded-full transition-all duration-500 ease-out';
-            } else {
-                progressBar.className = 'h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out';
-            }
-
-            const sumSubBudgets = appState.categories.reduce((acc, c) => acc + (Number(c.budget) || 0), 0);
-            if (allocPill) {
-                allocPill.textContent = `(Metas distribuídas: ${formatCurrency(sumSubBudgets)})`;
+                dot.className = 'w-2 h-2 rounded-full bg-amber-300';
+                txt.textContent = 'Local';
             }
         }
 
-        function renderCategoriesGrid() {
-            const grid = document.getElementById('categories-grid');
-            if (!grid) return;
+        async function salvarDados() {
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+            renderizar();
+            const url = obterUrlNuvem();
+            if (!url) return atualizarStatusNuvem(false);
+            try {
+                if (url.endsWith('.json')) {
+                    await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state) });
+                } else {
+                    await fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(state) });
+                }
+                atualizarStatusNuvem(true);
+            } catch (e) {
+                atualizarStatusNuvem(false);
+            }
+        }
 
-            grid.innerHTML = appState.categories.map(cat => {
-                const theme = THEME_MAP[cat.color] || THEME_MAP.indigo;
-                const catItems = appState.items.filter(item => item.categoryId === cat.id);
-                const catSpent = catItems.reduce((acc, item) => acc + (Number(item.amount) || 0), 0);
-                const catPurchased = catItems.filter(i => i.purchased).reduce((acc, i) => acc + (Number(i.amount) || 0), 0);
-                const catPurchasedCount = catItems.filter(i => i.purchased).length;
-                const catBudget = Number(cat.budget) || 0;
-                const catRemaining = catBudget - catSpent;
-                const catPercent = catBudget > 0 ? (catSpent / catBudget) * 100 : 0;
-                const barWidth = Math.min(100, Math.max(0, catPercent));
+        async function carregarDadosIniciais() {
+            try {
+                const salvo = localStorage.getItem(LOCAL_KEY);
+                if (salvo) {
+                    const parsed = JSON.parse(salvo);
+                    if (parsed && Array.isArray(parsed.categorias)) state = parsed;
+                }
+            } catch (e) {}
+            renderizar();
 
-                let barColor = theme.bar;
-                if (catRemaining < 0) barColor = 'bg-rose-600';
-                else if (catPercent >= 85) barColor = 'bg-amber-500';
+            const url = obterUrlNuvem();
+            if (!url) return atualizarStatusNuvem(false);
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                    const remoto = await res.json();
+                    const dados = (remoto && remoto.state) ? remoto.state : remoto;
+                    if (dados && Array.isArray(dados.categorias)) {
+                        state = { orcamentoGeral: Number(dados.orcamentoGeral) || 2000, categorias: dados.categorias, itens: Array.isArray(dados.itens) ? dados.itens : [] };
+                        localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+                        renderizar();
+                    }
+                    atualizarStatusNuvem(true);
+                }
+            } catch (e) {
+                atualizarStatusNuvem(false);
+            }
+        }
 
-                const remainingBadgeClass = catRemaining < 0
-                    ? 'text-rose-700 bg-rose-50 border-rose-200'
-                    : 'text-emerald-700 bg-emerald-50 border-emerald-200';
+        function renderizar() {
+            const totalGeral = Number(state.orcamentoGeral) || 2000;
+            const totalLancado = state.itens.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+            const itensComprados = state.itens.filter(i => i.comprado);
+            const totalComprado = itensComprados.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+            const saldoGeral = totalGeral - totalLancado;
+            const percGeral = totalGeral > 0 ? (totalLancado / totalGeral) * 100 : 0;
 
-                const itemsListHtml = catItems.length === 0
-                    ? `<div class="text-center py-6 px-3 bg-slate-50/70 rounded-xl border border-dashed border-slate-200 text-xs text-slate-400">
-                           Nenhuma roupa ou gasto adicionado para <strong>${escapeHtml(cat.name)}</strong> ainda.
-                       </div>`
-                    : catItems.map(item => {
-                        const isChecked = Boolean(item.purchased);
-                        return `
-                        <div class="animate-item flex items-center justify-between gap-2 p-2.5 rounded-xl border ${isChecked ? 'bg-emerald-50/40 border-emerald-200/80' : 'bg-slate-50/70 hover:bg-slate-100/70 border-slate-200/70'} transition">
+            document.getElementById('resumo-orcamento-geral').textContent = formatarMoeda(totalGeral);
+            document.getElementById('resumo-total-lancado').textContent = formatarMoeda(totalLancado);
+            document.getElementById('resumo-comprado-badge').textContent = `✅ Já Comprado (OK): ${formatarMoeda(totalComprado)} (${itensComprados.length} de ${state.itens.length} itens)`;
+            document.getElementById('resumo-progresso-texto').textContent = `${percGeral.toFixed(0)}%`;
+            document.getElementById('resumo-progresso-barra').style.width = `${Math.min(100, Math.max(0, percGeral))}%`;
+
+            const cardSaldo = document.getElementById('card-saldo-geral');
+            const labelSaldo = document.getElementById('label-saldo-geral');
+            const valorSaldo = document.getElementById('resumo-saldo-geral');
+            const statusSaldo = document.getElementById('status-saldo-geral');
+            valorSaldo.textContent = formatarMoeda(saldoGeral);
+
+            if (saldoGeral < 0) {
+                cardSaldo.className = 'bg-rose-50 rounded-2xl p-5 shadow-xs border border-rose-200 flex flex-col justify-between';
+                labelSaldo.className = 'text-xs font-semibold uppercase tracking-wider text-rose-700 block mb-1';
+                valorSaldo.className = 'text-2xl sm:text-3xl font-extrabold text-rose-700';
+                statusSaldo.className = 'text-xs text-rose-600 font-semibold mt-3';
+                statusSaldo.textContent = `Orçamento estourado em ${formatarMoeda(Math.abs(saldoGeral))}`;
+            } else {
+                cardSaldo.className = 'bg-emerald-50/70 rounded-2xl p-5 shadow-xs border border-emerald-200/80 flex flex-col justify-between';
+                labelSaldo.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1';
+                valorSaldo.className = 'text-2xl sm:text-3xl font-extrabold text-emerald-700';
+                statusSaldo.className = 'text-xs text-emerald-700 font-medium mt-3';
+                statusSaldo.textContent = 'Dentro do limite planejado';
+            }
+
+            const cores = {
+                indigo: { topo: 'border-t-4 border-t-indigo-500', barra: 'bg-indigo-600' },
+                rose: { topo: 'border-t-4 border-t-rose-500', barra: 'bg-rose-500' },
+                emerald: { topo: 'border-t-4 border-t-emerald-500', barra: 'bg-emerald-600' },
+                amber: { topo: 'border-t-4 border-t-amber-500', barra: 'bg-amber-500' }
+            };
+
+            const grid = document.getElementById('grid-categorias');
+            grid.innerHTML = state.categorias.map(cat => {
+                const c = cores[cat.cor] || cores.indigo;
+                const itensCat = state.itens.filter(i => i.categoriaId === cat.id);
+                const gastoCat = itensCat.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+                const compradoCat = itensCat.filter(i => i.comprado).reduce((s, i) => s + (Number(i.valor) || 0), 0);
+                const saldoCat = cat.meta - gastoCat;
+                const percCat = cat.meta > 0 ? Math.min(100, (gastoCat / cat.meta) * 100) : 0;
+
+                const listaHtml = itensCat.length === 0
+                    ? `<p class="text-xs text-slate-400 text-center py-5 bg-slate-50 rounded-xl border border-dashed border-slate-200">Nenhum item adicionado para ${cat.nome}.</p>`
+                    : itensCat.map(item => `
+                        <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border ${item.comprado ? 'bg-emerald-50/70 border-emerald-200' : 'bg-slate-50 border-slate-200/70'}">
                             <label class="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer select-none">
-                                <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="window.toggleItemPurchased('${item.id}')" class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer shrink-0">
-                                <span class="text-xs sm:text-sm font-medium truncate ${isChecked ? 'line-through text-slate-400' : 'text-slate-700'}">
-                                    ${escapeHtml(item.name)}
-                                </span>
-                                ${isChecked ? '<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 shrink-0">OK</span>' : ''}
+                                <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="window.toggleComprado('${item.id}')" class="w-5 h-5 rounded accent-emerald-600 cursor-pointer shrink-0">
+                                <span class="text-xs sm:text-sm font-medium truncate ${item.comprado ? 'line-through text-slate-400' : 'text-slate-700'}">${item.descricao}</span>
+                                ${item.comprado ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-600 text-white shrink-0">OK</span>' : ''}
                             </label>
-                            <div class="flex items-center gap-1.5 shrink-0">
-                                <span class="text-xs sm:text-sm font-bold ${isChecked ? 'line-through text-slate-400' : 'text-slate-800'}">
-                                    ${formatCurrency(item.amount)}
-                                </span>
-                                <button type="button" onclick="window.openEditItemModal('${item.id}')" title="Editar item" class="text-slate-400 hover:text-indigo-600 p-1 rounded-lg hover:bg-white transition cursor-pointer">
-                                    <i class="ph ph-pencil-simple text-sm"></i>
-                                </button>
-                                <button type="button" onclick="window.deleteItem('${item.id}')" title="Excluir item" class="text-slate-400 hover:text-rose-600 p-1 rounded-lg hover:bg-white transition cursor-pointer">
-                                    <i class="ph ph-trash text-sm"></i>
-                                </button>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="text-xs sm:text-sm font-bold ${item.comprado ? 'line-through text-slate-400' : 'text-slate-800'}">${formatarMoeda(item.valor)}</span>
+                                <button type="button" onclick="window.removerItem('${item.id}')" title="Excluir item" class="text-slate-400 hover:text-rose-600 px-1.5 py-0.5 rounded hover:bg-white cursor-pointer">🗑️</button>
                             </div>
-                        </div>`;
-                    }).join('');
+                        </div>`).join('');
 
                 return `
-                <div class="bg-white rounded-2xl shadow-xs border border-slate-200/80 ${theme.headerBorder} p-5 flex flex-col justify-between space-y-4">
+                <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 ${c.topo} flex flex-col justify-between">
                     <div>
-                        <!-- Cabeçalho do Card da Pessoa -->
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl ${theme.iconBg} flex items-center justify-center text-xl shadow-2xs shrink-0">
-                                    ${cat.emoji}
-                                </div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-2xl">${cat.emoji}</span>
                                 <div>
-                                    <h3 class="text-base font-bold text-slate-800 leading-tight">${escapeHtml(cat.name)}</h3>
-                                    <p class="text-xs text-slate-400">${escapeHtml(cat.subtitle)}</p>
+                                    <h3 class="text-base font-bold text-slate-800">${cat.nome}</h3>
+                                    <span class="text-xs text-emerald-700 font-medium">Comprado (OK): ${formatarMoeda(compradoCat)}</span>
                                 </div>
                             </div>
-                            <button type="button" onclick="window.openBudgetModal()" title="Clique para ajustar a meta" class="text-right group cursor-pointer">
-                                <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">Meta Individual</span>
-                                <span class="text-sm font-extrabold text-slate-700 group-hover:text-indigo-600 transition flex items-center justify-end gap-1">
-                                    ${formatCurrency(catBudget)}
-                                    <i class="ph ph-pencil-simple text-xs text-slate-400 group-hover:text-indigo-600"></i>
-                                </span>
+                            <button type="button" onclick="window.editarMeta('${cat.id}')" class="text-right group cursor-pointer">
+                                <span class="text-[10px] uppercase font-semibold text-slate-400 block">Meta</span>
+                                <span class="text-sm font-bold text-slate-700 group-hover:text-indigo-600">${formatarMoeda(cat.meta)} ✏️</span>
                             </button>
                         </div>
-
-                        <!-- Resumo Financeiro da Pessoa -->
-                        <div class="mt-4 grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 text-xs">
+                        <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 text-xs mb-3">
                             <div>
-                                <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Planejado</span>
-                                <span class="font-bold text-slate-800">${formatCurrency(catSpent)}</span>
-                            </div>
-                            <div>
-                                <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">Comprado ✅</span>
-                                <span class="font-bold text-emerald-700">${formatCurrency(catPurchased)} <span class="text-[10px] font-normal text-slate-400">(${catPurchasedCount})</span></span>
+                                <span class="text-slate-400 block">Gasto na categoria</span>
+                                <span class="font-bold text-slate-800 text-sm">${formatarMoeda(gastoCat)}</span>
                             </div>
                             <div class="text-right">
-                                <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">${catRemaining < 0 ? 'Excedido' : 'Saldo'}</span>
-                                <span class="font-extrabold ${catRemaining < 0 ? 'text-rose-600' : 'text-emerald-700'}">${formatCurrency(catRemaining)}</span>
+                                <span class="text-slate-400 block">Saldo restante</span>
+                                <span class="font-bold text-sm ${saldoCat < 0 ? 'text-rose-600' : 'text-emerald-700'}">${formatarMoeda(saldoCat)}</span>
                             </div>
                         </div>
-
-                        <!-- Barra de Progresso da Pessoa -->
-                        <div class="mt-3">
-                            <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                                <span>Uso da meta de ${escapeHtml(cat.name)}</span>
-                                <span class="font-bold">${catPercent.toFixed(0)}%</span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full ${barColor} rounded-full transition-all duration-500" style="width: ${barWidth.toFixed(1)}%"></div>
-                            </div>
+                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+                            <div class="h-full ${saldoCat < 0 ? 'bg-rose-600' : c.barra} rounded-full transition-all" style="width: ${percCat}%"></div>
                         </div>
-
-                        <!-- Lista de Roupas / Itens da Pessoa -->
-                        <div class="mt-4 space-y-2 max-h-60 overflow-y-auto custom-scroll pr-0.5">
-                            ${itemsListHtml}
-                        </div>
+                        <div class="space-y-2 max-h-60 overflow-y-auto custom-scroll pr-1">${listaHtml}</div>
                     </div>
-
-                    <!-- Mini Formulário Rápido Dentro do Card da Pessoa -->
-                    <form onsubmit="window.handleQuickCardAdd(event, '${cat.id}')" class="pt-3 border-t border-slate-100">
-                        <div class="flex items-center gap-1.5 mb-2 flex-wrap">
-                            <span class="text-[10px] font-semibold text-slate-400">Rápido:</span>
-                            <button type="button" onclick="window.fillCardQuickInput('${cat.id}', 'Camisa')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md transition cursor-pointer">Camisa</button>
-                            <button type="button" onclick="window.fillCardQuickInput('${cat.id}', 'Calça')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md transition cursor-pointer">Calça</button>
-                            <button type="button" onclick="window.fillCardQuickInput('${cat.id}', 'Calçado')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md transition cursor-pointer">Calçado</button>
-                            <button type="button" onclick="window.fillCardQuickInput('${cat.id}', 'Vestido / Conjunto')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md transition cursor-pointer">Conjunto</button>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="quick-name-${cat.id}" required placeholder="Nova peça para ${escapeHtml(cat.name)}..." class="flex-1 min-w-0 bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
-                            <input type="text" inputmode="decimal" id="quick-amount-${cat.id}" required placeholder="R$ 0,00" class="w-24 bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold rounded-xl px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
-                            <button type="submit" title="Adicionar item" class="${theme.btnBg} text-white text-xs font-bold px-3 py-2 rounded-xl transition flex items-center justify-center shrink-0 cursor-pointer shadow-2xs">
-                                <i class="ph-bold ph-plus text-sm"></i>
-                            </button>
-                        </div>
-                    </form>
                 </div>`;
             }).join('');
         }
 
-        // ============================================================================
-        // AÇÕES DO USUÁRIO (ADICIONAR, CHECKBOX "OK", EDITAR, EXCLUIR E METAS)
-        // ============================================================================
-
-        function handleAddExpense(event) {
-            event.preventDefault();
-            const categoryEl = document.getElementById('item-category');
-            const nameEl = document.getElementById('item-name');
-            const amountEl = document.getElementById('item-amount');
-
-            const categoryId = categoryEl.value;
-            const name = nameEl.value.trim();
-            const amount = parseCurrencyInput(amountEl.value);
-
-            if (!name || amount <= 0) {
-                showToast('Informe a descrição da peça e um valor válido.', true);
-                return;
-            }
-
-            const newItem = {
-                id: 'item_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-                categoryId,
-                name,
-                amount,
-                purchased: false,
-                createdAt: Date.now()
-            };
-
-            appState.items.push(newItem);
-            nameEl.value = '';
-            amountEl.value = '';
-            nameEl.focus();
-
-            saveState(true);
-            showToast(`"${name}" (${formatCurrency(amount)}) adicionado!`);
-        }
-
-        function handleQuickCardAdd(event, categoryId) {
-            event.preventDefault();
-            const nameEl = document.getElementById(`quick-name-${categoryId}`);
-            const amountEl = document.getElementById(`quick-amount-${categoryId}`);
-            if (!nameEl || !amountEl) return;
-
-            const name = nameEl.value.trim();
-            const amount = parseCurrencyInput(amountEl.value);
-
-            if (!name || amount <= 0) {
-                showToast('Digite o nome da roupa e um valor maior que zero.', true);
-                return;
-            }
-
-            const newItem = {
-                id: 'item_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-                categoryId,
-                name,
-                amount,
-                purchased: false,
-                createdAt: Date.now()
-            };
-
-            appState.items.push(newItem);
-            nameEl.value = '';
-            amountEl.value = '';
-
-            saveState(true);
-            showToast(`Adicionado em ${categoryId.toUpperCase()}: ${formatCurrency(amount)}`);
-        }
-
-        function fillQuickTag(tagText) {
-            const nameInput = document.getElementById('item-name');
-            const amountInput = document.getElementById('item-amount');
-            if (!nameInput) return;
-            nameInput.value = tagText;
-            if (amountInput) amountInput.focus();
-        }
-
-        function fillCardQuickInput(categoryId, tagText) {
-            const nameInput = document.getElementById(`quick-name-${categoryId}`);
-            const amountInput = document.getElementById(`quick-amount-${categoryId}`);
-            if (!nameInput) return;
-            nameInput.value = tagText;
-            if (amountInput) amountInput.focus();
-        }
-
-        function toggleItemPurchased(itemId) {
-            const item = appState.items.find(i => i.id === itemId);
-            if (!item) return;
-            item.purchased = !item.purchased;
-            saveState(true);
-            showToast(item.purchased ? `Marcado como comprado (OK): ${item.name}` : `Desmarcado: ${item.name}`);
-        }
-
-        function deleteItem(itemId) {
-            const idx = appState.items.findIndex(i => i.id === itemId);
-            if (idx === -1) return;
-            const removed = appState.items[idx];
-            appState.items.splice(idx, 1);
-            saveState(true);
-            showToast(`Item "${removed.name}" removido.`);
-        }
-
-        function openEditItemModal(itemId) {
-            const item = appState.items.find(i => i.id === itemId);
-            if (!item) return;
-            document.getElementById('edit-item-id').value = item.id;
-            document.getElementById('edit-item-category').value = item.categoryId;
-            document.getElementById('edit-item-name').value = item.name;
-            document.getElementById('edit-item-amount').value = item.amount;
-
-            const modal = document.getElementById('edit-item-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeEditItemModal() {
-            const modal = document.getElementById('edit-item-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function handleSaveEditedItem(event) {
-            event.preventDefault();
-            const id = document.getElementById('edit-item-id').value;
-            const categoryId = document.getElementById('edit-item-category').value;
-            const name = document.getElementById('edit-item-name').value.trim();
-            const amount = parseCurrencyInput(document.getElementById('edit-item-amount').value);
-
-            const item = appState.items.find(i => i.id === id);
-            if (!item || !name || amount <= 0) return;
-
-            item.categoryId = categoryId;
-            item.name = name;
-            item.amount = amount;
-
-            closeEditItemModal();
-            saveState(true);
-            showToast('Item atualizado com sucesso!');
-        }
-
-        // ============================================================================
-        // MODAL DE METAS E ORÇAMENTO GERAL
-        // ============================================================================
-
-        function openBudgetModal() {
-            document.getElementById('modal-total-budget').value = appState.totalBudget;
-            const container = document.getElementById('modal-subcategories-inputs');
-            container.innerHTML = appState.categories.map(cat => `
-                <div class="flex items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <span class="text-xs font-bold text-slate-700 flex items-center gap-2">
-                        <span>${cat.emoji}</span>
-                        <span>${escapeHtml(cat.name)}</span>
-                    </span>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-xs text-slate-400 font-semibold">R$</span>
-                        <input type="number" step="0.01" min="0" id="modal-cat-budget-${cat.id}" value="${cat.budget}" oninput="window.updateModalAllocationPreview()" class="w-28 bg-white border border-slate-300 text-slate-800 font-bold text-xs rounded-lg px-2.5 py-1.5 text-right focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-            `).join('');
-
-            updateModalAllocationPreview();
-            const modal = document.getElementById('budget-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeBudgetModal() {
-            const modal = document.getElementById('budget-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function updateModalAllocationPreview() {
-            const total = parseCurrencyInput(document.getElementById('modal-total-budget').value);
-            let sum = 0;
-            appState.categories.forEach(cat => {
-                const el = document.getElementById(`modal-cat-budget-${cat.id}`);
-                if (el) sum += parseCurrencyInput(el.value);
-            });
-            const sumEl = document.getElementById('modal-allocated-sum');
-            const diff = total - sum;
-            if (Math.abs(diff) < 0.01) {
-                sumEl.className = 'font-bold text-emerald-600';
-                sumEl.textContent = `${formatCurrency(sum)} (100% distribuído)`;
-            } else if (diff > 0) {
-                sumEl.className = 'font-bold text-amber-600';
-                sumEl.textContent = `${formatCurrency(sum)} (Faltam ${formatCurrency(diff)})`;
-            } else {
-                sumEl.className = 'font-bold text-rose-600';
-                sumEl.textContent = `${formatCurrency(sum)} (Passou ${formatCurrency(Math.abs(diff))})`;
-            }
-        }
-
-        function autoDistributeRemaining() {
-            const total = parseCurrencyInput(document.getElementById('modal-total-budget').value);
-            let sumOthers = 0;
-            appState.categories.forEach(cat => {
-                if (cat.id !== 'outros') {
-                    const el = document.getElementById(`modal-cat-budget-${cat.id}`);
-                    if (el) sumOthers += parseCurrencyInput(el.value);
-                }
-            });
-            const outrosInput = document.getElementById('modal-cat-budget-outros');
-            if (outrosInput) {
-                outrosInput.value = Math.max(0, (total - sumOthers)).toFixed(2);
-            }
-            updateModalAllocationPreview();
-        }
-
-        function handleSaveBudgets(event) {
-            event.preventDefault();
-            const newTotal = parseCurrencyInput(document.getElementById('modal-total-budget').value);
-            if (newTotal <= 0) return;
-
-            appState.totalBudget = newTotal;
-            appState.categories.forEach(cat => {
-                const el = document.getElementById(`modal-cat-budget-${cat.id}`);
-                if (el) {
-                    cat.budget = Math.max(0, parseCurrencyInput(el.value));
-                }
-            });
-
-            closeBudgetModal();
-            saveState(true);
-            showToast('Metas e orçamento atualizados!');
-        }
-
-        // ============================================================================
-        // PERSISTÊNCIA HÍBRIDA (LOCALSTORAGE + FIREBASE + GOOGLE APPS SCRIPT)
-        // ============================================================================
-
-        function hasCloudConfigured() {
-            return Boolean(activeFirebaseUrl || activeGasUrl);
-        }
+        window.preencherChip = function(texto) {
+            const input = document.getElementById('input-descricao');
+            input.value = texto;
+            document.getElementById('input-valor').focus();
         };
 
-        // ============================================================================
-        // PERSISTÊNCIA HÍBRIDA (LOCALSTORAGE + FIREBASE + GOOGLE APPS SCRIPT)
-        // ============================================================================
+        window.adicionarItem = function(e) {
+            e.preventDefault();
+            const descEl = document.getElementById('input-descricao');
+            const valEl = document.getElementById('input-valor');
+            const catEl = document.getElementById('input-categoria');
+            const descricao = descEl.value.trim();
+            const valor = lerValorNumerico(valEl.value);
+            if (!descricao || valor <= 0) return;
 
-        function hasCloudConfigured() {
-            const isDefaultPlaceholder = activeFirebaseUrl.includes('orcamento-fim-de-ano-default-rtdb.firebaseio.com');
-            return Boolean((activeFirebaseUrl && !isDefaultPlaceholder) || activeGasUrl);
-        }
+            state.itens.push({
+                id: 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                descricao,
+                valor,
+                categoriaId: catEl.value,
+                comprado: false
+            });
+            descEl.value = '';
+            valEl.value = '';
+            descEl.focus();
+            salvarDados();
+        };
 
-        function loadLocalState() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && typeof parsed.totalBudget === 'number' && Array.isArray(parsed.categories)) {
-                        appState = {
-                            totalBudget: parsed.totalBudget,
-                            categories: parsed.categories,
-                            items: Array.isArray(parsed.items) ? parsed.items : []
-                        };
-                    }
-                }
-            } catch (err) {
-                console.error('Erro ao ler dados locais:', err);
+        window.toggleComprado = function(id) {
+            const item = state.itens.find(i => i.id === id);
+            if (item) {
+                item.comprado = !item.comprado;
+                salvarDados();
             }
-            updateDbStatusUI(hasCloudConfigured() ? 'connected' : 'local');
-        }
+        };
 
-        function saveState(syncWithCloud = true) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-            } catch (err) {
-                console.error('Erro ao salvar localmente:', err);
-            }
-            renderAll();
+        window.removerItem = function(id) {
+            state.itens = state.itens.filter(i => i.id !== id);
+            salvarDados();
+        };
 
-            if (syncWithCloud && hasCloudConfigured()) {
-                syncToCloud();
-            }
-        }
+        window.abrirModalMetas = function() {
+            document.getElementById('meta-geral-input').value = state.orcamentoGeral;
+            document.getElementById('metas-categorias-inputs').innerHTML = state.categorias.map(cat => `
+                <div class="flex items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <span class="text-xs font-bold text-slate-700">${cat.emoji} ${cat.nome}</span>
+                    <input type="text" inputmode="decimal" id="meta-cat-${cat.id}" value="${cat.meta}" class="w-28 bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-right text-xs font-bold">
+                </div>
+            `).join('');
+            const m = document.getElementById('modal-metas');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        };
 
-        function formatFirebaseEndpoint(url) {
-            let clean = url.trim().replace(/\/+$/, '');
-            if (!clean.endsWith('.json')) {
-                clean += '/orcamento_fim_ano.json';
-            }
-            return clean;
-        }
+        window.fecharModalMetas = function() {
+            const m = document.getElementById('modal-metas');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        };
 
-        async function syncToCloud() {
-            if (!hasCloudConfigured()) return;
-            updateDbStatusUI('syncing');
+        window.editarMeta = function() {
+            window.abrirModalMetas();
+        };
 
-            const payload = {
-                action: 'save',
-                firebaseUrl: activeFirebaseUrl,
-                updatedAt: Date.now(),
-                state: appState
-            };
+        window.salvarMetas = function(e) {
+            e.preventDefault();
+            const novoGeral = lerValorNumerico(document.getElementById('meta-geral-input').value);
+            if (novoGeral > 0) state.orcamentoGeral = novoGeral;
+            state.categorias.forEach(cat => {
+                const el = document.getElementById(`meta-cat-${cat.id}`);
+                if (el) cat.meta = Math.max(0, lerValorNumerico(el.value));
+            });
+            window.fecharModalMetas();
+            salvarDados();
+        };
 
-            try {
-                let savedOk = false;
+        window.abrirModalBanco = function() {
+            document.getElementById('input-cloud-url').value = localStorage.getItem(CLOUD_URL_KEY) || FIXED_DB_URL || '';
+            const m = document.getElementById('modal-banco');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        };
 
-                // 1. Se tiver URL do Firebase configurada, salva direto no Firebase Realtime DB
-                if (activeFirebaseUrl) {
-                    const endpoint = formatFirebaseEndpoint(activeFirebaseUrl);
-                    const res = await fetch(endpoint, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (res.ok) savedOk = true;
-                }
+        window.fecharModalBanco = function() {
+            const m = document.getElementById('modal-banco');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        };
 
-                // 2. Se tiver URL do Google Apps Script configurada, envia via text/plain (evita bloqueio CORS no GitHub Pages)
-                if (activeGasUrl) {
-                    await fetch(activeGasUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(payload)
-                    });
-                    savedOk = true;
-                }
+        window.salvarConfigBanco = function() {
+            const url = document.getElementById('input-cloud-url').value.trim();
+            localStorage.setItem(CLOUD_URL_KEY, url);
+            window.fecharModalBanco();
+            salvarDados();
+        };
 
-                updateDbStatusUI(savedOk ? 'synced' : 'local');
-            } catch (err) {
-                console.error('Erro ao sincronizar na nuvem:', err);
-                updateDbStatusUI('error');
-            }
-        }
-
-        async function syncFromCloud(silent = true) {
-            if (!hasCloudConfigured()) {
-                if (!silent) showToast('Configure a URL do seu Firebase ou Google Script.', true);
-                return;
-            }
-            updateDbStatusUI('syncing');
-
-            try {
-                let remoteState = null;
-
-                // Tenta buscar do Firebase Realtime Database primeiro
-                if (activeFirebaseUrl) {
-                    const endpoint = formatFirebaseEndpoint(activeFirebaseUrl);
-                    const res = await fetch(endpoint + '?t=' + Date.now());
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && data.state) remoteState = data.state;
-                        else if (data && typeof data.totalBudget === 'number') remoteState = data;
-                    }
-                }
-
-                // Se não veio do Firebase direto e houver URL do Google Apps Script, busca via Google Apps Script
-                if (!remoteState && activeGasUrl) {
-                    const sep = activeGasUrl.includes('?') ? '&' : '?';
-                    const res = await fetch(activeGasUrl + sep + 'action=load&t=' + Date.now());
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && data.state) remoteState = data.state;
-                    }
-                }
-
-                if (remoteState && typeof remoteState.totalBudget === 'number' && Array.isArray(remoteState.categories)) {
-                    appState = {
-                        totalBudget: remoteState.totalBudget,
-                        categories: remoteState.categories,
-                        items: Array.isArray(remoteState.items) ? remoteState.items : []
-                    };
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-                    renderAll();
-                    updateDbStatusUI('synced');
-                    if (!silent) showToast('Dados carregados da nuvem com sucesso!');
-                } else {
-                    await syncToCloud();
-                    if (!silent) showToast('Banco conectado e sincronizado com seus dados atuais!');
-                }
-            } catch (err) {
-                console.error('Erro ao buscar da nuvem:', err);
-                updateDbStatusUI('error');
-                if (!silent) showToast('Salvo no navegador (verifique as regras/URL da nuvem).', true);
-            }
-        }
-
-        async function syncFromCloud(silent = true) {
-            if (!hasCloudConfigured()) {
-                if (!silent) showToast('Configure a URL do seu Firebase ou Google Script.', true);
-                return;
-            }
-            updateDbStatusUI('syncing');
-
-            try {
-                let remoteState = null;
-
-                // Tenta buscar do Firebase Realtime Database primeiro
-                if (activeFirebaseUrl && !activeFirebaseUrl.includes('orcamento-fim-de-ano-default-rtdb.firebaseio.com')) {
-                    const endpoint = formatFirebaseEndpoint(activeFirebaseUrl);
-                    const res = await fetch(endpoint + '?t=' + Date.now());
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && data.state) remoteState = data.state;
-                    }
-                }
-
-                // Se não veio do Firebase direto e houver URL do Google Apps Script, busca via Google Apps Script
-                if (!remoteState && activeGasUrl) {
-                    const sep = activeGasUrl.includes('?') ? '&' : '?';
-                    const res = await fetch(activeGasUrl + sep + 'action=load&t=' + Date.now());
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && data.state) remoteState = data.state;
-                    }
-                }
-
-                if (remoteState && typeof remoteState.totalBudget === 'number' && Array.isArray(remoteState.categories)) {
-                    appState = {
-                        totalBudget: remoteState.totalBudget,
-                        categories: remoteState.categories,
-                        items: Array.isArray(remoteState.items) ? remoteState.items : []
-                    };
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-                    renderAll();
-                    updateDbStatusUI('synced');
-                    if (!silent) showToast('Dados carregados da nuvem com sucesso!');
-                } else {
-                    await syncToCloud();
-                    if (!silent) showToast('Banco conectado e inicializado com seus dados!');
-                }
-            } catch (err) {
-                console.error('Erro ao buscar da nuvem:', err);
-                updateDbStatusUI('error');
-                if (!silent) showToast('Não foi possível conectar à URL informada.', true);
-            }
-        }
-
-        function updateDbStatusUI(status) {
-            const dot = document.getElementById('db-status-dot');
-            const label = document.getElementById('db-status-label');
-            if (!dot || !label) return;
-
-            if (status === 'syncing') {
-                dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
-                label.textContent = 'Sincronizando...';
-            } else if (status === 'synced' || status === 'connected') {
-                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                label.textContent = 'Nuvem Ativa';
-            } else if (status === 'error') {
-                dot.className = 'w-2 h-2 rounded-full bg-rose-400';
-                label.textContent = 'Salvo Local';
-            } else {
-                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                label.textContent = 'Salvo Local';
-            }
-        }
-
-        // ============================================================================
-        // MODAL DE BANCO DE DADOS E GERADOR DO GOOGLE SCRIPT COM URL DO FIREBASE
-        // ============================================================================
-
-        function buildAppsScriptCode(fbUrlInput) {
-            const cleanFbUrl = (fbUrlInput || FIXED_FIREBASE_URL || 'https://SEU-PROJETO-default-rtdb.firebaseio.com/')
-                .trim()
-                .replace(/\/+$/, '');
-
-            return `// =========================================================
-// GOOGLE APPS SCRIPT CONECTADO AO FIREBASE REALTIME DATABASE
-// =========================================================
-const FIREBASE_DB_URL = "${cleanFbUrl}/orcamento_fim_ano.json";
-
-function doGet(e) {
-  try {
-    // 1. Busca os dados diretamente da URL do Firebase
-    var response = UrlFetchApp.fetch(FIREBASE_DB_URL, { muteHttpExceptions: true });
-    var content = response.getContentText();
-    if (content && content !== "null") {
-      return ContentService.createTextOutput(content)
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-  } catch (err) {}
-
-  // Fallback local nas propriedades do Google Script
-  var backup = PropertiesService.getScriptProperties().getProperty("DB_ORCAMENTO");
-  return ContentService.createTextOutput(backup || '{"state":null}')
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  var body = e.postData.contents;
-  // Salva cópia no Google Script
-  PropertiesService.getScriptProperties().setProperty("DB_ORCAMENTO", body);
-
-  // 2. Envia e salva diretamente na URL do Firebase Realtime Database
-  try {
-    UrlFetchApp.fetch(FIREBASE_DB_URL, {
-      method: "put",
-      contentType: "application/json",
-      payload: body,
-      muteHttpExceptions: true
-    });
-  } catch (err) {}
-
-  return ContentService.createTextOutput(JSON.stringify({ ok: true, firebase: FIREBASE_DB_URL }))
-    .setMimeType(ContentService.MimeType.JSON);
-}`;
-        }
-
-        function updateAppsScriptCodePreview() {
-            const fbInput = document.getElementById('firebase-url-input');
-            const preview = document.getElementById('gas-code-preview');
-            if (!preview) return;
-            preview.textContent = buildAppsScriptCode(fbInput ? fbInput.value : activeFirebaseUrl);
-        }
-
-        function openDatabaseModal() {
-            document.getElementById('firebase-url-input').value = activeFirebaseUrl;
-            document.getElementById('gas-url-input').value = activeGasUrl;
-            updateAppsScriptCodePreview();
-
-            const modal = document.getElementById('database-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeDatabaseModal() {
-            const modal = document.getElementById('database-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function saveDatabaseUrl() {
-            const fbUrl = document.getElementById('firebase-url-input').value.trim();
-            const gasUrl = document.getElementById('gas-url-input').value.trim();
-
-            activeFirebaseUrl = fbUrl;
-            activeGasUrl = gasUrl;
-
-            localStorage.setItem(FIREBASE_STORAGE_KEY, activeFirebaseUrl);
-            localStorage.setItem(GAS_STORAGE_KEY, activeGasUrl);
-            updateAppsScriptCodePreview();
-
-            if (hasCloudConfigured()) {
-                syncToCloud();
-                showToast('Conectado! Firebase / Google Script sincronizados.');
-                closeDatabaseModal();
-            } else {
-                updateDbStatusUI('local');
-                showToast('Salvo localmente neste navegador.');
-            }
-        }
-
-        function copyAppsScriptTemplate() {
-            const fbInput = document.getElementById('firebase-url-input');
-            const code = buildAppsScriptCode(fbInput ? fbInput.value : activeFirebaseUrl);
-            const temp = document.createElement('textarea');
-            temp.value = code;
-            document.body.appendChild(temp);
-            temp.select();
-            document.execCommand('copy');
-            document.body.removeChild(temp);
-            showToast('Código Google Script com URL do Firebase copiado!');
-        }
-
-        function exportBackupJson() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
-            const a = document.createElement('a');
-            a.setAttribute("href", dataStr);
-            a.setAttribute("download", "orcamento_fim_de_ano.json");
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            showToast('Backup baixado!');
-        }
-
-        function importBackupJson(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (parsed && typeof parsed.totalBudget === 'number' && Array.isArray(parsed.categories)) {
-                        appState = parsed;
-                        saveState();
-                        closeDatabaseModal();
-                        showToast('Dados importados com sucesso!');
-                    }
-                } catch (err) {
-                    showToast('Arquivo inválido.', true);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function openResetModal() {
-            const modal = document.getElementById('reset-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeResetModal() {
-            const modal = document.getElementById('reset-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function confirmResetData() {
-            appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
-            saveState();
-            closeResetModal();
-            showToast('Orçamento reiniciado!');
-        }
-
-        let toastTimer;
-        function showToast(msg, isWarning = false) {
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toast-icon');
-            document.getElementById('toast-message').textContent = msg;
-            icon.className = isWarning
-                ? 'ph-fill ph-warning-circle text-amber-400 text-lg'
-                : 'ph-fill ph-check-circle text-emerald-400 text-lg';
-            toast.classList.remove('hidden');
-            toast.classList.add('flex');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.classList.remove('flex');
-            }, 3000);
-        }
-
-        // Expõe todas as funções no objeto global window para funcionamento 100% garantido no GitHub Pages
-        window.handleAddExpense = handleAddExpense;
-        window.handleQuickCardAdd = handleQuickCardAdd;
-        window.fillQuickTag = fillQuickTag;
-        window.fillCardQuickInput = fillCardQuickInput;
-        window.toggleItemPurchased = toggleItemPurchased;
-        window.deleteItem = deleteItem;
-        window.openEditItemModal = openEditItemModal;
-        window.closeEditItemModal = closeEditItemModal;
-        window.handleSaveEditedItem = handleSaveEditedItem;
-        window.openBudgetModal = openBudgetModal;
-        window.closeBudgetModal = closeBudgetModal;
-        window.updateModalAllocationPreview = updateModalAllocationPreview;
-        window.autoDistributeRemaining = autoDistributeRemaining;
-        window.handleSaveBudgets = handleSaveBudgets;
-        window.openDatabaseModal = openDatabaseModal;
-        window.closeDatabaseModal = closeDatabaseModal;
-        window.saveDatabaseUrl = saveDatabaseUrl;
-        window.syncFromCloud = syncFromCloud;
-        window.copyAppsScriptTemplate = copyAppsScriptTemplate;
-        window.updateAppsScriptCodePreview = updateAppsScriptCodePreview;
-        window.exportBackupJson = exportBackupJson;
-        window.importBackupJson = importBackupJson;
-        window.openResetModal = openResetModal;
-        window.closeResetModal = closeResetModal;
-        window.confirmResetData = confirmResetData;
-
-        // Inicialização imediata e segura para GitHub Pages
-        document.addEventListener('DOMContentLoaded', function () {
-            loadLocalState();
-            renderAll();
-            if (hasCloudConfigured()) {
-                syncFromCloud(true);
-            }
-        });
+        carregarDadosIniciais();
     </script>
 </body>
 </html>
