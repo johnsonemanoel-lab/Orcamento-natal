@@ -3,473 +3,883 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orçamento de Final de Ano - Roupas e Vestuário</title>
+    <title>Orçamento de Fim de Ano - Roupas & Vestuário</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonte Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f8fafc;
+            border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Estilo customizado para o Checkbox de Compra (OK) */
+        .check-compra {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid #cbd5e1;
+            border-radius: 7px;
+            background-color: #ffffff;
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            flex-shrink: 0;
+        }
+        .check-compra:hover {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+        }
+        .check-compra:checked {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+        .check-compra:checked::before {
+            content: "✓";
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1;
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen pb-14">
+<body class="text-slate-800 antialiased min-h-screen pb-16">
 
-    <!-- Cabeçalho Limpo e Elegante -->
-    <header class="bg-gradient-to-r from-indigo-950 via-indigo-900 to-violet-900 text-white shadow-md sticky top-0 z-30">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+    <!-- Alerta de Permissão do Firebase (Exibido apenas se as Regras estiverem bloqueadas com 401/403) -->
+    <div id="firebase-permission-alert" class="hidden bg-amber-500 text-slate-950 px-4 py-3 shadow-md">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm">
+            <div>
+                <strong>⚠️ Atenção nas Regras do seu Firebase (orcamento-natal):</strong> O banco recusou a gravação por permissão. No console do Firebase, clique na aba <strong>"Regras"</strong> (ao lado de Dados), altere <code class="bg-amber-200 px-1.5 py-0.5 rounded font-mono">".read": true, ".write": true</code> e clique em <strong>Publicar</strong>.
+            </div>
+            <button type="button" onclick="window.abrirModalBanco()" class="bg-slate-900 text-white font-semibold px-3 py-1.5 rounded-lg shrink-0 hover:bg-slate-800 transition cursor-pointer">
+                Ver Como Fazer
+            </button>
+        </div>
+    </div>
+
+    <!-- Cabeçalho Principal -->
+    <header class="bg-gradient-to-r from-indigo-950 via-indigo-900 to-violet-950 text-white shadow-lg sticky top-0 z-30 border-b border-white/10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+            <!-- Logo e Título -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-xl shadow-inner shrink-0">
+                <div class="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-2xl shadow-inner shrink-0">
                     🛍️
                 </div>
                 <div>
-                    <h1 class="text-base sm:text-xl font-bold tracking-tight leading-tight">Orçamento de Final de Ano</h1>
-                    <p class="text-xs text-indigo-200/80">Controle de Roupas e Vestuário da Família</p>
+                    <h1 class="text-base sm:text-xl font-extrabold tracking-tight leading-tight">Orçamento de Fim de Ano</h1>
+                    <p class="text-xs text-indigo-200/80">Roupas & Vestuário • Johnson, Leandra, Emanuel e Outros</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button type="button" onclick="window.abrirModalMetas()" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl border border-white/15 transition flex items-center gap-1.5 cursor-pointer">
-                    <span>⚙️ Ajustar Metas</span>
+
+            <!-- Botões de Ação e Status do Banco -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Status Firebase -->
+                <button type="button" onclick="window.abrirModalBanco()" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl border border-white/15 transition flex items-center gap-2 cursor-pointer" title="Configurações do Banco de Dados Firebase">
+                    <span id="cloud-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="cloud-status-text">Conectado: orcamento-natal</span>
                 </button>
-                <button type="button" onclick="window.abrirModalBanco()" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-2 rounded-xl border border-white/15 transition flex items-center gap-2 cursor-pointer">
-                    <span id="cloud-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span id="cloud-status-text">Local</span>
+
+                <!-- Botão Sincronizar Agora -->
+                <button type="button" onclick="window.sincronizarAgora()" class="text-xs bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-100 font-semibold px-3 py-2 rounded-xl border border-indigo-400/30 transition flex items-center gap-1.5 cursor-pointer" title="Buscar dados atualizados do Firebase">
+                    <span id="sync-icon">🔄</span>
+                    <span class="hidden sm:inline">Sincronizar</span>
+                </button>
+
+                <!-- Botão Ajustar Metas -->
+                <button type="button" onclick="window.abrirModalMetas()" class="text-xs bg-white text-indigo-950 hover:bg-indigo-50 font-bold px-3.5 py-2 rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+                    <span>⚙️ Metas</span>
                 </button>
             </div>
         </div>
     </header>
 
+    <!-- Conteúdo Principal -->
     <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
 
-        <!-- 1. Painel de Resumo Geral no Topo (3 Cards Elegantes) -->
+        <!-- 1. Três Cards Principais no Topo -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
             <!-- Card 1: Orçamento Geral -->
-            <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 flex flex-col justify-between">
+            <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/90 flex flex-col justify-between">
                 <div class="flex items-start justify-between">
                     <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Orçamento Geral</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Orçamento Geral Total</span>
                         <span id="resumo-orcamento-geral" class="text-2xl sm:text-3xl font-extrabold text-slate-800">R$ 2.000,00</span>
                     </div>
-                    <button type="button" onclick="window.abrirModalMetas()" class="text-xs text-indigo-600 hover:underline font-semibold">✏️ Editar</button>
+                    <button type="button" onclick="window.abrirModalMetas()" class="text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-lg transition cursor-pointer">
+                        ✏️ Editar
+                    </button>
                 </div>
-                <div class="mt-4">
-                    <div class="flex justify-between text-xs text-slate-500 mb-1">
-                        <span>Progresso Geral</span>
-                        <span id="resumo-progresso-texto" class="font-bold text-slate-700">0%</span>
-                    </div>
-                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div id="resumo-progresso-barra" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Soma das metas individuais:</span>
+                    <span id="resumo-soma-metas" class="font-bold text-slate-700">R$ 2.000,00</span>
                 </div>
             </div>
 
-            <!-- Card 2: Total Lançado + Já Comprado (OK) -->
-            <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 flex flex-col justify-between">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Total Lançado</span>
-                        <span id="resumo-total-lancado" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">R$ 0,00</span>
+            <!-- Card 2: Total Planejado / Gasto + Badge Comprado (OK) -->
+            <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/90 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Total Lançado nas Categorias</span>
+                            <span id="resumo-total-lancado" class="text-2xl sm:text-3xl font-extrabold text-indigo-600">R$ 0,00</span>
+                        </div>
+                        <span id="resumo-progresso-texto" class="text-xs font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200/60 px-2.5 py-1 rounded-lg">0%</span>
                     </div>
-                    <span class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">🛒</span>
+
+                    <!-- Barra de Progresso Geral -->
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mt-3">
+                        <div id="resumo-progresso-barra" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="mt-3">
-                    <span id="resumo-comprado-badge" class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-lg">
-                        ✅ Já Comprado (OK): R$ 0,00 (0 de 0 itens)
+
+                <!-- Selo Verde do que já foi marcado com Checkbox (OK) -->
+                <div class="mt-3 pt-2 flex items-center justify-between">
+                    <span id="resumo-comprado-badge" class="w-full inline-flex items-center justify-between text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">
+                        <span>✅ Já Comprado (OK): R$ 0,00</span>
+                        <span class="text-[11px] font-semibold bg-emerald-200/70 text-emerald-900 px-2 py-0.5 rounded-md">0 de 0 itens</span>
                     </span>
                 </div>
             </div>
 
-            <!-- Card 3: Saldo Disponível Geral -->
-            <div id="card-saldo-geral" class="bg-emerald-50/70 rounded-2xl p-5 shadow-xs border border-emerald-200/80 flex flex-col justify-between transition-colors">
+            <!-- Card 3: Saldo Restante Geral -->
+            <div id="card-saldo-geral" class="bg-emerald-50/80 rounded-2xl p-5 shadow-xs border border-emerald-200 flex flex-col justify-between transition-colors">
                 <div class="flex items-start justify-between">
                     <div>
-                        <span id="label-saldo-geral" class="text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1">Saldo Disponível Geral</span>
+                        <span id="label-saldo-geral" class="text-xs font-bold uppercase tracking-wider text-emerald-700 block mb-1">Saldo Restante Geral</span>
                         <span id="resumo-saldo-geral" class="text-2xl sm:text-3xl font-extrabold text-emerald-700">R$ 2.000,00</span>
                     </div>
-                    <span class="w-10 h-10 rounded-xl bg-white/80 flex items-center justify-center text-lg shadow-2xs">💰</span>
+                    <span class="w-10 h-10 rounded-xl bg-white/90 border border-emerald-100 flex items-center justify-center text-lg shadow-2xs">💰</span>
                 </div>
-                <p id="status-saldo-geral" class="text-xs text-emerald-700 font-medium mt-3">Dentro do limite planejado</p>
+                <div class="mt-4 pt-3 border-t border-emerald-200/60 flex items-center justify-between text-xs">
+                    <span id="status-saldo-geral" class="text-emerald-800 font-semibold">Dentro do orçamento de R$ 2.000,00</span>
+                </div>
             </div>
+
         </section>
 
-        <!-- 2. Formulário de Novo Item -->
-        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80">
-            <h2 class="text-sm sm:text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-                <span>➕ Adicionar Roupa ou Vestuário ao Orçamento</span>
-            </h2>
-            <form onsubmit="window.adicionarItem(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+        <!-- 2. Formulário Principal para Lançar Roupa ou Vestuário -->
+        <section class="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/90">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <h2 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm">➕</span>
+                    <span>Adicionar Roupa / Vestuário ao Orçamento</span>
+                </h2>
+                <span class="text-xs text-slate-400">Cada item compõe o gasto da pessoa e abate do saldo geral</span>
+            </div>
+
+            <form onsubmit="window.adicionarItemPrincipal(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
                 <div class="sm:col-span-5">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Descrição da Peça</label>
-                    <input type="text" id="input-descricao" required placeholder="Ex: Camisa social, Calça jeans, Tênis..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Peça de Roupa / Descrição</label>
+                    <input type="text" id="input-descricao" required placeholder="Ex: Camisa social, Calça jeans, Vestido, Tênis..." class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                 </div>
+
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Valor (R$)</label>
-                    <input type="text" inputmode="decimal" id="input-valor" required placeholder="Ex: 89,90" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Valor (R$)</label>
+                    <input type="text" inputmode="decimal" id="input-valor" required placeholder="Ex: 120,00" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-bold rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                 </div>
+
                 <div class="sm:col-span-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Subcategoria (Pessoa)</label>
-                    <select id="input-categoria" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-medium rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Subcategoria (Pessoa)</label>
+                    <select id="input-categoria" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition cursor-pointer">
                         <option value="johnson">👔 Johnson</option>
                         <option value="leandra">👗 Leandra</option>
                         <option value="emanuel">👕 Emanuel</option>
-                        <option value="outros">🛍️ Outros Gastos</option>
+                        <option value="outros">🛍️ Outros Gastos (Vestuário)</option>
                     </select>
                 </div>
+
                 <div class="sm:col-span-2 flex items-end">
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs sm:text-sm py-2.5 px-3 rounded-xl shadow-xs transition cursor-pointer">
-                        Adicionar ao Orçamento
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-sm transition cursor-pointer">
+                        Adicionar Item
                     </button>
                 </div>
             </form>
 
-            <!-- Chips Rápidos Clicáveis -->
-            <div class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5 flex-wrap">
-                <span class="text-xs text-slate-400 mr-1">Preencher rápido:</span>
-                <button type="button" onclick="window.preencherChip('Camisa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👕 Camisa</button>
-                <button type="button" onclick="window.preencherChip('Calça / Sarja')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👖 Calça / Sarja</button>
-                <button type="button" onclick="window.preencherChip('Calçado')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👟 Calçado</button>
-                <button type="button" onclick="window.preencherChip('Vestido / Roupa')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👗 Vestido / Roupa</button>
-                <button type="button" onclick="window.preencherChip('Acessório')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">🎁 Acessório</button>
+            <!-- Botões Rápidos de Sugestão de Vestuário -->
+            <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-medium text-slate-400 mr-1">Sugestões rápidas:</span>
+                <button type="button" onclick="window.preencherChip('Camisa')" class="text-xs font-medium bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👕 Camisa</button>
+                <button type="button" onclick="window.preencherChip('Calça / Jeans')" class="text-xs font-medium bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👖 Calça / Jeans</button>
+                <button type="button" onclick="window.preencherChip('Calçado / Tênis')" class="text-xs font-medium bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👟 Calçado / Tênis</button>
+                <button type="button" onclick="window.preencherChip('Vestido / Blusa')" class="text-xs font-medium bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">👗 Vestido / Blusa</button>
+                <button type="button" onclick="window.preencherChip('Bermuda / Short')" class="text-xs font-medium bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">🩳 Bermuda / Short</button>
+                <button type="button" onclick="window.preencherChip('Roupas Íntimas / Meias')" class="text-xs font-medium bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 px-2.5 py-1 rounded-lg transition cursor-pointer">🧦 Roupas Íntimas</button>
             </div>
         </section>
 
-        <!-- 3. Grid com os 4 Cards de Subcategorias -->
+        <!-- 3. Grid 2x2 com as Subcategorias (Johnson, Leandra, Emanuel, Outros Gastos) -->
         <section id="grid-categorias" class="grid grid-cols-1 md:grid-cols-2 gap-5"></section>
+
     </main>
 
-    <!-- Modal: Ajustar Metas -->
-    <div id="modal-metas" class="fixed inset-0 bg-slate-900/60 z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+    <!-- Notificação Flutuante (Toast) -->
+    <div id="toast-feedback" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl shadow-xl border border-white/10 items-center gap-2 transition-all">
+        <span id="toast-icon">✅</span>
+        <span id="toast-text">Salvo no Firebase!</span>
+    </div>
+
+    <!-- Modal 1: Ajustar Orçamento Geral e Metas Individuais -->
+    <div id="modal-metas" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 class="text-base font-bold text-slate-800">⚙️ Ajustar Orçamento e Metas</h3>
-                <button type="button" onclick="window.fecharModalMetas()" class="text-slate-400 hover:text-slate-600 font-bold text-lg px-2">✕</button>
+                <h3 class="text-base font-extrabold text-slate-800">⚙️ Ajustar Orçamento e Metas</h3>
+                <button type="button" onclick="window.fecharModalMetas()" class="text-slate-400 hover:text-slate-600 font-bold text-lg px-2 cursor-pointer">✕</button>
             </div>
-            <form onsubmit="window.salvarMetas(event)" class="mt-4 space-y-3">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Orçamento Geral Total (R$)</label>
-                    <input type="text" inputmode="decimal" id="meta-geral-input" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 font-bold text-base rounded-xl px-3.5 py-2">
+
+            <form onsubmit="window.salvarMetas(event)" class="mt-4 space-y-4">
+                <div class="bg-indigo-50/70 p-3.5 rounded-xl border border-indigo-100">
+                    <label class="block text-xs font-extrabold uppercase text-indigo-900 mb-1">Orçamento Geral Total (R$)</label>
+                    <input type="text" inputmode="decimal" id="meta-geral-input" required class="w-full bg-white border border-indigo-200 text-slate-900 font-extrabold text-base rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div id="metas-categorias-inputs" class="space-y-2 pt-2"></div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Metas por Subcategoria (Pessoa)</label>
+                    <div id="metas-categorias-inputs" class="space-y-2.5"></div>
+                </div>
+
                 <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="window.fecharModalMetas()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Salvar Metas</button>
+                    <button type="button" onclick="window.fecharModalMetas()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-xs cursor-pointer">Salvar no Firebase</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal: Nuvem / Banco -->
-    <div id="modal-banco" class="fixed inset-0 bg-slate-900/60 z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+    <!-- Modal 2: Status e Configuração do Banco Firebase -->
+    <div id="modal-banco" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 class="text-base font-bold text-slate-800">☁️ Conexão com Nuvem / Banco</h3>
-                <button type="button" onclick="window.fecharModalBanco()" class="text-slate-400 hover:text-slate-600 font-bold text-lg px-2">✕</button>
+                <h3 class="text-base font-extrabold text-slate-800">🔥 Banco de Dados Firebase Realtime</h3>
+                <button type="button" onclick="window.fecharModalBanco()" class="text-slate-400 hover:text-slate-600 font-bold text-lg px-2 cursor-pointer">✕</button>
             </div>
-            <div class="mt-4 space-y-3">
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Cole abaixo a URL do seu <strong>Firebase Realtime Database</strong> (terminando em <code class="bg-slate-100 px-1 rounded">.json</code>) ou a URL do seu <strong>Google Apps Script</strong> (<code class="bg-slate-100 px-1 rounded">/exec</code>).
-                </p>
-                <input type="url" id="input-cloud-url" placeholder="https://seu-banco-default-rtdb.firebaseio.com/orcamento.json" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs font-mono rounded-xl px-3.5 py-2.5">
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="window.fecharModalBanco()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Fechar</button>
-                    <button type="button" onclick="window.salvarConfigBanco()" class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Salvar e Sincronizar</button>
+
+            <div class="mt-4 space-y-4 text-xs text-slate-600">
+                <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900">
+                    <p class="font-bold mb-1">✅ Conectado ao seu projeto Firebase:</p>
+                    <code class="block bg-white/90 border border-emerald-200 px-2.5 py-1.5 rounded-lg font-mono text-[11px] break-all">https://orcamento-natal-default-rtdb.firebaseio.com/orcamento_fim_ano.json</code>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">URL do Banco de Dados (Firebase Realtime Database):</label>
+                    <input type="url" id="input-cloud-url" class="w-full bg-slate-50 border border-slate-300 text-slate-800 font-mono text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                    <p class="font-bold text-slate-700">📌 Importante — Aba "Regras" no seu Firebase:</p>
+                    <p>Para que o seu link do GitHub Pages consiga ler e gravar sem bloqueio, na aba <strong>Regras</strong> do seu Realtime Database deixe assim:</p>
+                    <pre class="bg-slate-900 text-emerald-400 p-3 rounded-lg font-mono text-[11px] overflow-x-auto">{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}</pre>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="window.restaurarPadraoFirebase()" class="px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 cursor-pointer">
+                        Zerar / Resetar Orçamento
+                    </button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="window.fecharModalBanco()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer">Fechar</button>
+                        <button type="button" onclick="window.salvarConfigBanco()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Salvar e Testar</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const FIXED_DB_URL = ""; // Cole aqui sua URL do Firebase (.json) ou do Google Script (/exec) antes do commit no GitHub
-        const LOCAL_KEY = 'orcamento_familia_2026';
-        const CLOUD_URL_KEY = 'orcamento_cloud_url';
+        // ============================================================================
+        // CONFIGURAÇÃO OFICIAL DO SEU FIREBASE REALTIME DATABASE
+        // ============================================================================
+        const DEFAULT_FIREBASE_URL = "https://orcamento-natal-default-rtdb.firebaseio.com/orcamento_fim_ano.json";
+        const LOCAL_STORAGE_KEY = "orcamento_natal_dados_v2";
+        const CUSTOM_URL_KEY = "orcamento_natal_custom_url_v2";
 
-        const INITIAL_STATE = {
-            orcamentoGeral: 2000,
-            categorias: [
-                { id: 'johnson', nome: 'Johnson', emoji: '👔', cor: 'indigo', meta: 600 },
-                { id: 'leandra', nome: 'Leandra', emoji: '👗', cor: 'rose', meta: 600 },
-                { id: 'emanuel', nome: 'Emanuel', emoji: '👕', cor: 'emerald', meta: 500 },
-                { id: 'outros', nome: 'Outros Gastos', emoji: '🛍️', cor: 'amber', meta: 300 }
-            ],
-            itens: []
-        };
-
-        let state = JSON.parse(JSON.stringify(INITIAL_STATE));
-
-        function formatarMoeda(valor) {
-            return (Number(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        // Estrutura Padrão Inicial (Orçamento R$ 2.000,00 dividido entre as 4 áreas)
+        function criarEstadoInicial() {
+            return {
+                orcamentoGeral: 2000,
+                updatedAt: Date.now(),
+                categorias: [
+                    { id: 'johnson', nome: 'Johnson', emoji: '👔', cor: 'indigo', meta: 600 },
+                    { id: 'leandra', nome: 'Leandra', emoji: '👗', cor: 'rose', meta: 600 },
+                    { id: 'emanuel', nome: 'Emanuel', emoji: '👕', cor: 'emerald', meta: 500 },
+                    { id: 'outros', nome: 'Outros Gastos', emoji: '🛍️', cor: 'amber', meta: 300 }
+                ],
+                itens: []
+            };
         }
 
-        function lerValorNumerico(texto) {
-            if (typeof texto === 'number') return texto;
-            const limpo = String(texto || '').replace(/[R$\s]/g, '').replace(',', '.');
+        let state = criarEstadoInicial();
+        let isSaving = false;
+
+        // ============================================================================
+        // FUNÇÕES UTILITÁRIAS DE FORMATAÇÃO E CONVERSÃO
+        // ============================================================================
+        function formatarMoeda(valor) {
+            const numero = Number(valor) || 0;
+            return numero.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function lerValorNumerico(entrada) {
+            if (typeof entrada === 'number') return entrada;
+            let limpo = String(entrada || '').trim().replace(/[R$\s]/g, '');
+            if (limpo.includes(',') && limpo.includes('.')) {
+                limpo = limpo.replace(/\./g, '').replace(',', '.');
+            } else if (limpo.includes(',')) {
+                limpo = limpo.replace(',', '.');
+            }
             const num = parseFloat(limpo);
             return isNaN(num) ? 0 : Math.round(num * 100) / 100;
         }
 
-        function obterUrlNuvem() {
-            let url = (localStorage.getItem(CLOUD_URL_KEY) || FIXED_DB_URL || '').trim();
-            if (url && url.includes('firebaseio.com') && !url.endsWith('.json')) {
-                url = url.replace(/\/+$/, '') + '/orcamento_familia.json';
+        function escaparHtml(texto) {
+            const div = document.createElement('div');
+            div.textContent = texto || '';
+            return div.innerHTML;
+        }
+
+        function mostrarToast(mensagem, icone = '✅') {
+            const toast = document.getElementById('toast-feedback');
+            document.getElementById('toast-icon').textContent = icone;
+            document.getElementById('toast-text').textContent = mensagem;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 2600);
+        }
+
+        // Garante que sempre use o seu Firebase oficial
+        function obterUrlFirebase() {
+            let url = (localStorage.getItem(CUSTOM_URL_KEY) || DEFAULT_FIREBASE_URL).trim();
+            if (!url) url = DEFAULT_FIREBASE_URL;
+            if (url.includes('firebaseio.com') && !url.endsWith('.json')) {
+                url = url.replace(/\/+$/, '') + '/orcamento_fim_ano.json';
             }
             return url;
         }
 
-        function atualizarStatusNuvem(sincronizado) {
+        // Normaliza os dados vindos do Firebase (pois o Firebase omite arrays vazios [])
+        function normalizarEstado(dados) {
+            const base = criarEstadoInicial();
+            if (!dados || typeof dados !== 'object') return base;
+
+            const orcamentoGeral = Number(dados.orcamentoGeral) > 0 ? Number(dados.orcamentoGeral) : 2000;
+            const categorias = Array.isArray(dados.categorias) && dados.categorias.length > 0
+                ? dados.categorias.map(c => ({
+                    id: c.id,
+                    nome: c.nome,
+                    emoji: c.emoji || '🛍️',
+                    cor: c.cor || 'indigo',
+                    meta: Number(c.meta) || 0
+                }))
+                : base.categorias;
+
+            let itens = [];
+            if (Array.isArray(dados.itens)) {
+                itens = dados.itens.filter(Boolean);
+            } else if (dados.itens && typeof dados.itens === 'object') {
+                itens = Object.values(dados.itens).filter(Boolean);
+            }
+
+            itens = itens.map(item => ({
+                id: String(item.id || ('item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6))),
+                descricao: String(item.descricao || 'Peça de Vestuário'),
+                valor: Number(item.valor) || 0,
+                categoriaId: String(item.categoriaId || 'outros'),
+                comprado: Boolean(item.comprado)
+            }));
+
+            return {
+                orcamentoGeral,
+                updatedAt: Number(dados.updatedAt) || Date.now(),
+                categorias,
+                itens
+            };
+        }
+
+        function atualizarIndicadorConexao(status, detalhe = '') {
             const dot = document.getElementById('cloud-dot');
-            const txt = document.getElementById('cloud-status-text');
-            const url = obterUrlNuvem();
-            if (url && sincronizado) {
-                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-                txt.textContent = 'Sincronizado';
+            const text = document.getElementById('cloud-status-text');
+            const alertBox = document.getElementById('firebase-permission-alert');
+
+            if (status === 'online') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400';
+                text.textContent = 'Firebase: orcamento-natal';
+                alertBox.classList.add('hidden');
+            } else if (status === 'syncing') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-indigo-300 animate-ping';
+                text.textContent = 'Salvando no Firebase...';
+            } else if (status === 'permission_error') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+                text.textContent = 'Firebase: Liberar Regras';
+                alertBox.classList.remove('hidden');
             } else {
-                dot.className = 'w-2 h-2 rounded-full bg-amber-300';
-                txt.textContent = 'Local';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-400';
+                text.textContent = detalhe || 'Modo Offline (Local)';
             }
         }
 
-        async function salvarDados() {
-            localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
-            renderizar();
-            const url = obterUrlNuvem();
-            if (!url) return atualizarStatusNuvem(false);
+        // ============================================================================
+        // COMUNICAÇÃO COM O BANCO DE DADOS FIREBASE REALTIME DATABASE
+        // ============================================================================
+        async function salvarDadosNoFirebase(mostrarFeedback = true) {
+            state.updatedAt = Date.now();
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+            renderizarTudo();
+
+            const url = obterUrlFirebase();
+            isSaving = true;
+            atualizarIndicadorConexao('syncing');
+
             try {
-                if (url.endsWith('.json')) {
-                    await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state) });
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state)
+                });
+
+                if (response.ok) {
+                    atualizarIndicadorConexao('online');
+                    if (mostrarFeedback) mostrarToast('Salvo no Firebase!', '☁️');
+                } else if (response.status === 401 || response.status === 403) {
+                    atualizarIndicadorConexao('permission_error');
+                    mostrarToast('Salvo localmente (libere as Regras do Firebase)', '⚠️');
                 } else {
-                    await fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(state) });
+                    atualizarIndicadorConexao('offline', 'Erro HTTP ' + response.status);
                 }
-                atualizarStatusNuvem(true);
-            } catch (e) {
-                atualizarStatusNuvem(false);
+            } catch (erro) {
+                atualizarIndicadorConexao('offline', 'Sem internet (Salvo Local)');
+            } finally {
+                isSaving = false;
             }
         }
 
-        async function carregarDadosIniciais() {
-            try {
-                const salvo = localStorage.getItem(LOCAL_KEY);
-                if (salvo) {
-                    const parsed = JSON.parse(salvo);
-                    if (parsed && Array.isArray(parsed.categorias)) state = parsed;
-                }
-            } catch (e) {}
-            renderizar();
+        async function carregarDoFirebase(silencioso = false) {
+            if (isSaving) return;
+            const url = obterUrlFirebase();
 
-            const url = obterUrlNuvem();
-            if (!url) return atualizarStatusNuvem(false);
+            if (!silencioso) {
+                atualizarIndicadorConexao('syncing');
+            }
+
             try {
-                const res = await fetch(url);
-                if (res.ok) {
-                    const remoto = await res.json();
-                    const dados = (remoto && remoto.state) ? remoto.state : remoto;
-                    if (dados && Array.isArray(dados.categorias)) {
-                        state = { orcamentoGeral: Number(dados.orcamentoGeral) || 2000, categorias: dados.categorias, itens: Array.isArray(dados.itens) ? dados.itens : [] };
-                        localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
-                        renderizar();
+                const response = await fetch(url + '?t=' + Date.now(), {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    atualizarIndicadorConexao('permission_error');
+                    return;
+                }
+
+                if (!response.ok) {
+                    atualizarIndicadorConexao('offline');
+                    return;
+                }
+
+                const dadosRemotos = await response.json();
+
+                // Se o banco no Firebase estiver "null" (vazio), inicializa automaticamente!
+                if (dadosRemotos === null) {
+                    const cacheLocal = localStorage.getItem(LOCAL_STORAGE_KEY);
+                    if (cacheLocal) {
+                        try {
+                            state = normalizarEstado(JSON.parse(cacheLocal));
+                        } catch (e) {
+                            state = criarEstadoInicial();
+                        }
+                    } else {
+                        state = criarEstadoInicial();
                     }
-                    atualizarStatusNuvem(true);
+                    await salvarDadosNoFirebase(false);
+                    mostrarToast('Banco Firebase inicializado com sucesso!', '🎉');
+                    return;
                 }
-            } catch (e) {
-                atualizarStatusNuvem(false);
+
+                // Se já existem dados no Firebase, atualiza a tela
+                state = normalizarEstado(dadosRemotos);
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+                renderizarTudo();
+                atualizarIndicadorConexao('online');
+                if (!silencioso) mostrarToast('Sincronizado com o Firebase!', '🔄');
+            } catch (erro) {
+                atualizarIndicadorConexao('offline');
             }
         }
 
-        function renderizar() {
-            const totalGeral = Number(state.orcamentoGeral) || 2000;
-            const totalLancado = state.itens.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+        // ============================================================================
+        // RENDERIZAÇÃO DA INTERFACE (TOPO + 4 CARDS DE SUBCATEGORIAS)
+        // ============================================================================
+        function renderizarTudo() {
+            const orcamentoGeral = Number(state.orcamentoGeral) || 2000;
+            const somaMetas = state.categorias.reduce((acc, c) => acc + (Number(c.meta) || 0), 0);
+            const totalLancado = state.itens.reduce((acc, i) => acc + (Number(i.valor) || 0), 0);
             const itensComprados = state.itens.filter(i => i.comprado);
-            const totalComprado = itensComprados.reduce((s, i) => s + (Number(i.valor) || 0), 0);
-            const saldoGeral = totalGeral - totalLancado;
-            const percGeral = totalGeral > 0 ? (totalLancado / totalGeral) * 100 : 0;
+            const totalComprado = itensComprados.reduce((acc, i) => acc + (Number(i.valor) || 0), 0);
+            const saldoGeral = orcamentoGeral - totalLancado;
+            const percentualGeral = orcamentoGeral > 0 ? (totalLancado / orcamentoGeral) * 100 : 0;
 
-            document.getElementById('resumo-orcamento-geral').textContent = formatarMoeda(totalGeral);
+            // Atualiza Card 1: Orçamento Geral
+            document.getElementById('resumo-orcamento-geral').textContent = formatarMoeda(orcamentoGeral);
+            document.getElementById('resumo-soma-metas').textContent = formatarMoeda(somaMetas);
+
+            // Atualiza Card 2: Total Planejado / Gasto e Selo Comprado (OK)
             document.getElementById('resumo-total-lancado').textContent = formatarMoeda(totalLancado);
-            document.getElementById('resumo-comprado-badge').textContent = `✅ Já Comprado (OK): ${formatarMoeda(totalComprado)} (${itensComprados.length} de ${state.itens.length} itens)`;
-            document.getElementById('resumo-progresso-texto').textContent = `${percGeral.toFixed(0)}%`;
-            document.getElementById('resumo-progresso-barra').style.width = `${Math.min(100, Math.max(0, percGeral))}%`;
+            document.getElementById('resumo-progresso-texto').textContent = `${percentualGeral.toFixed(0)}%`;
+            const barraGeral = document.getElementById('resumo-progresso-barra');
+            barraGeral.style.width = `${Math.min(100, Math.max(0, percentualGeral))}%`;
+            barraGeral.className = `h-full rounded-full transition-all duration-300 ${saldoGeral < 0 ? 'bg-rose-600' : (percentualGeral > 85 ? 'bg-amber-500' : 'bg-indigo-600')}`;
 
+            document.getElementById('resumo-comprado-badge').innerHTML = `
+                <span>✅ Já Comprado (OK): ${formatarMoeda(totalComprado)}</span>
+                <span class="text-[11px] font-bold bg-emerald-200/80 text-emerald-950 px-2 py-0.5 rounded-md">${itensComprados.length} de ${state.itens.length} itens</span>
+            `;
+
+            // Atualiza Card 3: Saldo Restante Geral
             const cardSaldo = document.getElementById('card-saldo-geral');
             const labelSaldo = document.getElementById('label-saldo-geral');
             const valorSaldo = document.getElementById('resumo-saldo-geral');
             const statusSaldo = document.getElementById('status-saldo-geral');
+
             valorSaldo.textContent = formatarMoeda(saldoGeral);
 
             if (saldoGeral < 0) {
-                cardSaldo.className = 'bg-rose-50 rounded-2xl p-5 shadow-xs border border-rose-200 flex flex-col justify-between';
-                labelSaldo.className = 'text-xs font-semibold uppercase tracking-wider text-rose-700 block mb-1';
+                cardSaldo.className = 'bg-rose-50 rounded-2xl p-5 shadow-xs border border-rose-200 flex flex-col justify-between transition-colors';
+                labelSaldo.className = 'text-xs font-bold uppercase tracking-wider text-rose-700 block mb-1';
                 valorSaldo.className = 'text-2xl sm:text-3xl font-extrabold text-rose-700';
-                statusSaldo.className = 'text-xs text-rose-600 font-semibold mt-3';
-                statusSaldo.textContent = `Orçamento estourado em ${formatarMoeda(Math.abs(saldoGeral))}`;
+                statusSaldo.className = 'text-rose-700 font-bold';
+                statusSaldo.textContent = `⚠️ Ultrapassou o orçamento em ${formatarMoeda(Math.abs(saldoGeral))}`;
             } else {
-                cardSaldo.className = 'bg-emerald-50/70 rounded-2xl p-5 shadow-xs border border-emerald-200/80 flex flex-col justify-between';
-                labelSaldo.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-700 block mb-1';
+                cardSaldo.className = 'bg-emerald-50/80 rounded-2xl p-5 shadow-xs border border-emerald-200 flex flex-col justify-between transition-colors';
+                labelSaldo.className = 'text-xs font-bold uppercase tracking-wider text-emerald-700 block mb-1';
                 valorSaldo.className = 'text-2xl sm:text-3xl font-extrabold text-emerald-700';
-                statusSaldo.className = 'text-xs text-emerald-700 font-medium mt-3';
-                statusSaldo.textContent = 'Dentro do limite planejado';
+                statusSaldo.className = 'text-emerald-800 font-semibold';
+                statusSaldo.textContent = `Restam ${formatarMoeda(saldoGeral)} disponíveis do total`;
             }
 
-            const cores = {
-                indigo: { topo: 'border-t-4 border-t-indigo-500', barra: 'bg-indigo-600' },
-                rose: { topo: 'border-t-4 border-t-rose-500', barra: 'bg-rose-500' },
-                emerald: { topo: 'border-t-4 border-t-emerald-500', barra: 'bg-emerald-600' },
-                amber: { topo: 'border-t-4 border-t-amber-500', barra: 'bg-amber-500' }
+            // Paleta de Cores por Pessoa
+            const estilosCor = {
+                indigo: {
+                    bordaTopo: 'border-t-4 border-t-indigo-600',
+                    iconeBg: 'bg-indigo-50 text-indigo-600 border-indigo-100',
+                    barra: 'bg-indigo-600',
+                    botao: 'bg-indigo-600 hover:bg-indigo-700'
+                },
+                rose: {
+                    bordaTopo: 'border-t-4 border-t-rose-500',
+                    iconeBg: 'bg-rose-50 text-rose-600 border-rose-100',
+                    barra: 'bg-rose-500',
+                    botao: 'bg-rose-500 hover:bg-rose-600'
+                },
+                emerald: {
+                    bordaTopo: 'border-t-4 border-t-emerald-600',
+                    iconeBg: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                    barra: 'bg-emerald-600',
+                    botao: 'bg-emerald-600 hover:bg-emerald-700'
+                },
+                amber: {
+                    bordaTopo: 'border-t-4 border-t-amber-500',
+                    iconeBg: 'bg-amber-50 text-amber-600 border-amber-100',
+                    barra: 'bg-amber-500',
+                    botao: 'bg-amber-500 hover:bg-amber-600'
+                }
             };
 
+            // Renderiza os 4 Cards das Pessoas
             const grid = document.getElementById('grid-categorias');
             grid.innerHTML = state.categorias.map(cat => {
-                const c = cores[cat.cor] || cores.indigo;
-                const itensCat = state.itens.filter(i => i.categoriaId === cat.id);
-                const gastoCat = itensCat.reduce((s, i) => s + (Number(i.valor) || 0), 0);
-                const compradoCat = itensCat.filter(i => i.comprado).reduce((s, i) => s + (Number(i.valor) || 0), 0);
-                const saldoCat = cat.meta - gastoCat;
-                const percCat = cat.meta > 0 ? Math.min(100, (gastoCat / cat.meta) * 100) : 0;
+                const tema = estilosCor[cat.cor] || estilosCor.indigo;
+                const itensPessoa = state.itens.filter(i => i.categoriaId === cat.id);
+                const gastoPessoa = itensPessoa.reduce((acc, i) => acc + (Number(i.valor) || 0), 0);
+                const itensCompradosPessoa = itensPessoa.filter(i => i.comprado);
+                const valorCompradoPessoa = itensCompradosPessoa.reduce((acc, i) => acc + (Number(i.valor) || 0), 0);
+                const saldoPessoa = cat.meta - gastoPessoa;
+                const percPessoa = cat.meta > 0 ? Math.min(100, (gastoPessoa / cat.meta) * 100) : 0;
 
-                const listaHtml = itensCat.length === 0
-                    ? `<p class="text-xs text-slate-400 text-center py-5 bg-slate-50 rounded-xl border border-dashed border-slate-200">Nenhum item adicionado para ${cat.nome}.</p>`
-                    : itensCat.map(item => `
-                        <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border ${item.comprado ? 'bg-emerald-50/70 border-emerald-200' : 'bg-slate-50 border-slate-200/70'}">
-                            <label class="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer select-none">
-                                <input type="checkbox" ${item.comprado ? 'checked' : ''} onchange="window.toggleComprado('${item.id}')" class="w-5 h-5 rounded accent-emerald-600 cursor-pointer shrink-0">
-                                <span class="text-xs sm:text-sm font-medium truncate ${item.comprado ? 'line-through text-slate-400' : 'text-slate-700'}">${item.descricao}</span>
-                                ${item.comprado ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-600 text-white shrink-0">OK</span>' : ''}
+                const listaItensHtml = itensPessoa.length === 0
+                    ? `<div class="text-center py-6 px-3 bg-slate-50/80 rounded-xl border border-dashed border-slate-200 text-xs text-slate-400">
+                         Nenhuma peça de roupa lançada para <strong>${escaparHtml(cat.nome)}</strong> ainda.
+                       </div>`
+                    : itensPessoa.map(item => `
+                        <div class="flex items-center justify-between gap-2.5 p-2.5 rounded-xl border transition-all ${item.comprado ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white hover:bg-slate-50 border-slate-200/80'}">
+                            <label class="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer select-none" title="Marque para dar o OK quando comprar">
+                                <input type="checkbox" class="check-compra" ${item.comprado ? 'checked' : ''} onchange="window.alternarCompra('${item.id}')">
+                                <span class="text-xs sm:text-sm font-semibold truncate ${item.comprado ? 'line-through text-slate-400' : 'text-slate-700'}">
+                                    ${escaparHtml(item.descricao)}
+                                </span>
+                                ${item.comprado ? '<span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-600 text-white shrink-0">OK</span>' : ''}
                             </label>
                             <div class="flex items-center gap-2 shrink-0">
-                                <span class="text-xs sm:text-sm font-bold ${item.comprado ? 'line-through text-slate-400' : 'text-slate-800'}">${formatarMoeda(item.valor)}</span>
-                                <button type="button" onclick="window.removerItem('${item.id}')" title="Excluir item" class="text-slate-400 hover:text-rose-600 px-1.5 py-0.5 rounded hover:bg-white cursor-pointer">🗑️</button>
+                                <span class="text-xs sm:text-sm font-extrabold ${item.comprado ? 'line-through text-emerald-700/70' : 'text-slate-800'}">
+                                    ${formatarMoeda(item.valor)}
+                                </span>
+                                <button type="button" onclick="window.excluirItem('${item.id}')" title="Remover item" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-lg transition cursor-pointer">
+                                    🗑️
+                                </button>
                             </div>
-                        </div>`).join('');
+                        </div>
+                    `).join('');
 
                 return `
-                <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/80 ${c.topo} flex flex-col justify-between">
+                <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-200/90 ${tema.bordaTopo} flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-2.5">
-                                <span class="text-2xl">${cat.emoji}</span>
+                        <!-- Topo do Card da Pessoa -->
+                        <div class="flex items-start justify-between gap-2 mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl border ${tema.iconeBg} flex items-center justify-center text-2xl shrink-0">
+                                    ${cat.emoji}
+                                </div>
                                 <div>
-                                    <h3 class="text-base font-bold text-slate-800">${cat.nome}</h3>
-                                    <span class="text-xs text-emerald-700 font-medium">Comprado (OK): ${formatarMoeda(compradoCat)}</span>
+                                    <h3 class="text-base font-extrabold text-slate-800 leading-tight">${escaparHtml(cat.nome)}</h3>
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 rounded-md mt-1">
+                                        ✅ Comprado (OK): ${formatarMoeda(valorCompradoPessoa)} (${itensCompradosPessoa.length}/${itensPessoa.length})
+                                    </span>
                                 </div>
                             </div>
-                            <button type="button" onclick="window.editarMeta('${cat.id}')" class="text-right group cursor-pointer">
-                                <span class="text-[10px] uppercase font-semibold text-slate-400 block">Meta</span>
-                                <span class="text-sm font-bold text-slate-700 group-hover:text-indigo-600">${formatarMoeda(cat.meta)} ✏️</span>
+
+                            <button type="button" onclick="window.abrirModalMetas()" class="text-right group bg-slate-50 hover:bg-indigo-50 px-2.5 py-1.5 rounded-xl border border-slate-200/80 transition cursor-pointer">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block">Meta</span>
+                                <span class="text-xs sm:text-sm font-extrabold text-slate-700 group-hover:text-indigo-600">${formatarMoeda(cat.meta)} ✏️</span>
                             </button>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 text-xs mb-3">
+
+                        <!-- Resumo de Gasto e Saldo da Pessoa -->
+                        <div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-xs mb-3">
                             <div>
-                                <span class="text-slate-400 block">Gasto na categoria</span>
-                                <span class="font-bold text-slate-800 text-sm">${formatarMoeda(gastoCat)}</span>
+                                <span class="text-slate-400 font-medium block">Total Planejado / Gasto</span>
+                                <span class="font-extrabold text-slate-800 text-sm sm:text-base">${formatarMoeda(gastoPessoa)}</span>
                             </div>
                             <div class="text-right">
-                                <span class="text-slate-400 block">Saldo restante</span>
-                                <span class="font-bold text-sm ${saldoCat < 0 ? 'text-rose-600' : 'text-emerald-700'}">${formatarMoeda(saldoCat)}</span>
+                                <span class="text-slate-400 font-medium block">Saldo de ${escaparHtml(cat.nome)}</span>
+                                <span class="font-extrabold text-sm sm:text-base ${saldoPessoa < 0 ? 'text-rose-600' : 'text-emerald-700'}">${formatarMoeda(saldoPessoa)}</span>
                             </div>
                         </div>
+
+                        <!-- Barra de Progresso Individual -->
                         <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
-                            <div class="h-full ${saldoCat < 0 ? 'bg-rose-600' : c.barra} rounded-full transition-all" style="width: ${percCat}%"></div>
+                            <div class="h-full ${saldoPessoa < 0 ? 'bg-rose-600' : tema.barra} rounded-full transition-all duration-300" style="width: ${percPessoa}%"></div>
                         </div>
-                        <div class="space-y-2 max-h-60 overflow-y-auto custom-scroll pr-1">${listaHtml}</div>
+
+                        <!-- Lista de Roupas com Checkbox (OK) -->
+                        <div class="space-y-2 max-h-64 overflow-y-auto custom-scroll pr-1 mb-4">
+                            ${listaItensHtml}
+                        </div>
                     </div>
+
+                    <!-- Mini Formulário Rápido Direto no Card da Pessoa -->
+                    <form onsubmit="window.adicionarItemRapidoCard(event, '${cat.id}')" class="pt-3 border-t border-slate-100 flex items-center gap-2">
+                        <input type="text" id="rapido-desc-${cat.id}" required placeholder="Nova peça p/ ${escaparHtml(cat.nome)}..." class="flex-1 min-w-0 bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                        <input type="text" inputmode="decimal" id="rapido-val-${cat.id}" required placeholder="R$ 0,00" class="w-24 bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white">
+                        <button type="submit" class="${tema.botao} text-white font-bold text-xs px-3 py-2 rounded-xl shadow-2xs transition shrink-0 cursor-pointer" title="Adicionar para ${escaparHtml(cat.nome)}">
+                            + Add
+                        </button>
+                    </form>
                 </div>`;
             }).join('');
         }
 
+        // ============================================================================
+        // AÇÕES DO USUÁRIO (ESCOPO GLOBAL WINDOW.*)
+        // ============================================================================
         window.preencherChip = function(texto) {
-            const input = document.getElementById('input-descricao');
-            input.value = texto;
+            const inputDesc = document.getElementById('input-descricao');
+            inputDesc.value = texto;
             document.getElementById('input-valor').focus();
         };
 
-        window.adicionarItem = function(e) {
-            e.preventDefault();
-            const descEl = document.getElementById('input-descricao');
-            const valEl = document.getElementById('input-valor');
-            const catEl = document.getElementById('input-categoria');
-            const descricao = descEl.value.trim();
-            const valor = lerValorNumerico(valEl.value);
-            if (!descricao || valor <= 0) return;
+        window.adicionarItemPrincipal = function(event) {
+            event.preventDefault();
+            const descInput = document.getElementById('input-descricao');
+            const valInput = document.getElementById('input-valor');
+            const catSelect = document.getElementById('input-categoria');
+
+            const descricao = descInput.value.trim();
+            const valor = lerValorNumerico(valInput.value);
+            const categoriaId = catSelect.value;
+
+            if (!descricao || valor <= 0) {
+                mostrarToast('Informe a descrição e um valor maior que zero.', '⚠️');
+                return;
+            }
 
             state.itens.push({
-                id: 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                id: 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                 descricao,
                 valor,
-                categoriaId: catEl.value,
+                categoriaId,
                 comprado: false
             });
-            descEl.value = '';
-            valEl.value = '';
-            descEl.focus();
-            salvarDados();
+
+            descInput.value = '';
+            valInput.value = '';
+            descInput.focus();
+            salvarDadosNoFirebase(true);
         };
 
-        window.toggleComprado = function(id) {
-            const item = state.itens.find(i => i.id === id);
-            if (item) {
-                item.comprado = !item.comprado;
-                salvarDados();
+        window.adicionarItemRapidoCard = function(event, categoriaId) {
+            event.preventDefault();
+            const descInput = document.getElementById(`rapido-desc-${categoriaId}`);
+            const valInput = document.getElementById(`rapido-val-${categoriaId}`);
+
+            const descricao = descInput.value.trim();
+            const valor = lerValorNumerico(valInput.value);
+
+            if (!descricao || valor <= 0) {
+                mostrarToast('Preencha a peça e um valor válido.', '⚠️');
+                return;
             }
+
+            state.itens.push({
+                id: 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                descricao,
+                valor,
+                categoriaId,
+                comprado: false
+            });
+
+            descInput.value = '';
+            valInput.value = '';
+            salvarDadosNoFirebase(true);
         };
 
-        window.removerItem = function(id) {
-            state.itens = state.itens.filter(i => i.id !== id);
-            salvarDados();
+        window.alternarCompra = function(itemId) {
+            const item = state.itens.find(i => i.id === itemId);
+            if (!item) return;
+            item.comprado = !item.comprado;
+            salvarDadosNoFirebase(false);
+            mostrarToast(
+                item.comprado ? `"${item.descricao}" marcado como Comprado (OK)!` : `"${item.descricao}" desmarcado.`,
+                item.comprado ? '✅' : '🛒'
+            );
         };
 
+        window.excluirItem = function(itemId) {
+            state.itens = state.itens.filter(i => i.id !== itemId);
+            salvarDadosNoFirebase(false);
+            mostrarToast('Item removido do orçamento.', '🗑️');
+        };
+
+        window.sincronizarAgora = function() {
+            carregarDoFirebase(false);
+        };
+
+        // Modais de Metas e Banco
         window.abrirModalMetas = function() {
             document.getElementById('meta-geral-input').value = state.orcamentoGeral;
             document.getElementById('metas-categorias-inputs').innerHTML = state.categorias.map(cat => `
-                <div class="flex items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <span class="text-xs font-bold text-slate-700">${cat.emoji} ${cat.nome}</span>
-                    <input type="text" inputmode="decimal" id="meta-cat-${cat.id}" value="${cat.meta}" class="w-28 bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-right text-xs font-bold">
+                <div class="flex items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <span class="text-xs font-bold text-slate-700">${cat.emoji} ${escaparHtml(cat.nome)}</span>
+                    <div class="flex items-center gap-1">
+                        <span class="text-xs text-slate-400 font-semibold">R$</span>
+                        <input type="text" inputmode="decimal" id="meta-cat-${cat.id}" value="${cat.meta}" class="w-28 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-right text-xs font-extrabold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
                 </div>
             `).join('');
-            const m = document.getElementById('modal-metas');
-            m.classList.remove('hidden');
-            m.classList.add('flex');
+
+            const modal = document.getElementById('modal-metas');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         };
 
         window.fecharModalMetas = function() {
-            const m = document.getElementById('modal-metas');
-            m.classList.add('hidden');
-            m.classList.remove('flex');
+            const modal = document.getElementById('modal-metas');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         };
 
-        window.editarMeta = function() {
-            window.abrirModalMetas();
-        };
-
-        window.salvarMetas = function(e) {
-            e.preventDefault();
+        window.salvarMetas = function(event) {
+            event.preventDefault();
             const novoGeral = lerValorNumerico(document.getElementById('meta-geral-input').value);
-            if (novoGeral > 0) state.orcamentoGeral = novoGeral;
+            if (novoGeral > 0) {
+                state.orcamentoGeral = novoGeral;
+            }
             state.categorias.forEach(cat => {
-                const el = document.getElementById(`meta-cat-${cat.id}`);
-                if (el) cat.meta = Math.max(0, lerValorNumerico(el.value));
+                const input = document.getElementById(`meta-cat-${cat.id}`);
+                if (input) {
+                    cat.meta = Math.max(0, lerValorNumerico(input.value));
+                }
             });
             window.fecharModalMetas();
-            salvarDados();
+            salvarDadosNoFirebase(true);
         };
 
         window.abrirModalBanco = function() {
-            document.getElementById('input-cloud-url').value = localStorage.getItem(CLOUD_URL_KEY) || FIXED_DB_URL || '';
-            const m = document.getElementById('modal-banco');
-            m.classList.remove('hidden');
-            m.classList.add('flex');
+            document.getElementById('input-cloud-url').value = obterUrlFirebase();
+            const modal = document.getElementById('modal-banco');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         };
 
         window.fecharModalBanco = function() {
-            const m = document.getElementById('modal-banco');
-            m.classList.add('hidden');
-            m.classList.remove('flex');
+            const modal = document.getElementById('modal-banco');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         };
 
         window.salvarConfigBanco = function() {
-            const url = document.getElementById('input-cloud-url').value.trim();
-            localStorage.setItem(CLOUD_URL_KEY, url);
+            const novaUrl = document.getElementById('input-cloud-url').value.trim();
+            if (novaUrl) {
+                localStorage.setItem(CUSTOM_URL_KEY, novaUrl);
+            } else {
+                localStorage.removeItem(CUSTOM_URL_KEY);
+            }
             window.fecharModalBanco();
-            salvarDados();
+            carregarDoFirebase(false);
         };
 
-        carregarDadosIniciais();
+        window.restaurarPadraoFirebase = function() {
+            state = criarEstadoInicial();
+            window.fecharModalBanco();
+            salvarDadosNoFirebase(true);
+        };
+
+        // ============================================================================
+        // INICIALIZAÇÃO AUTOMÁTICA + POLLING DE SINCRONIZAÇÃO
+        // ============================================================================
+        (function iniciarAplicativo() {
+            // 1. Carrega cache local imediatamente para abrir rápido
+            try {
+                const salvoLocal = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (salvoLocal) {
+                    state = normalizarEstado(JSON.parse(salvoLocal));
+                }
+            } catch (e) {}
+
+            renderizarTudo();
+
+            // 2. Conecta ao Firebase Realtime Database (orcamento-natal) e inicializa se estiver null
+            carregarDoFirebase(true);
+
+            // 3. Sincroniza automaticamente a cada 10 segundos entre celulares/computadores
+            setInterval(() => {
+                if (!document.hidden && !isSaving) {
+                    carregarDoFirebase(true);
+                }
+            }, 10000);
+        })();
     </script>
 </body>
 </html>
